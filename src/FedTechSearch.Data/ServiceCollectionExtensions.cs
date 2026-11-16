@@ -1,5 +1,6 @@
 using FedTechSearch.Core.Enrichment;
 using FedTechSearch.Core.Taxonomy;
+using FedTechSearch.Data.Feedback;
 using FedTechSearch.Data.Ingest;
 using FedTechSearch.Data.Llm;
 using FedTechSearch.Data.Search;
@@ -28,6 +29,10 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<JobSearch>();
+
+        services.Configure<FeedbackOptions>(config.GetSection(FeedbackOptions.Section));
+        services.AddSingleton<FeedbackKey>();
+        services.AddScoped<FeedbackService>();
         return services;
     }
 

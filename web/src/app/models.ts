@@ -46,6 +46,39 @@ export interface JobSearchResponse {
   location?: { mode: 'radius' | 'text' | 'state'; place: string | null; radiusMiles: number | null } | null;
 }
 
+export type TagField = 'roleFamily' | 'tech' | 'workingTitle' | 'seniority' | 'clearance' | 'workArrangement';
+
+export interface TagFeedbackInput {
+  field: TagField;
+  currentValue: string | null;
+  suggestedValue: string | null;
+  note: string | null;
+}
+
+export interface FeedbackExample {
+  jobId: string;
+  workingTitle: string;
+  officialTitle: string;
+  url: string;
+  note: string | null;
+  createdAt: string;
+}
+
+export interface FeedbackGroup {
+  field: TagField;
+  currentValue: string | null;
+  suggestedValue: string | null;
+  count: number;
+  lastAt: string;
+  examples: FeedbackExample[];
+}
+
+export interface FeedbackSummary {
+  days: number;
+  total: number;
+  groups: FeedbackGroup[];
+}
+
 /** "Within" choices for city searches; 0 is the exact city. Matches the API's default of 25. */
 export const RADIUS_OPTIONS = [0, 10, 25, 50, 100];
 export const DEFAULT_RADIUS = 25;

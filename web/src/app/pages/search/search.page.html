@@ -19,6 +19,11 @@
         </label>
       }
     }
+    @if (hiddenJobs.hidden().length) {
+      <button type="button" class="link hidden-link" (click)="openHidden()" aria-haspopup="dialog" aria-controls="hidden-dialog">
+        Hidden ({{ hiddenJobs.hidden().length }})
+      </button>
+    }
     <p class="total" aria-live="polite">
       @if (loading()) { Searching... } @else { {{ total() }} {{ total() === 1 ? 'job' : 'jobs' }} }
     </p>
@@ -261,5 +266,36 @@
     <button type="button" class="primary" (click)="closeFilters()">
       @if (loading()) { Searching... } @else { Show {{ total() }} {{ total() === 1 ? 'job' : 'jobs' }} }
     </button>
+  </footer>
+</dialog>
+
+<dialog #hiddenDialog id="hidden-dialog" class="hidden-posts" aria-labelledby="hidden-title"
+        (click)="onHiddenDialogClick($event)">
+  <header class="dialog-head">
+    <h2 id="hidden-title">Hidden posts</h2>
+    <button type="button" class="icon-btn" (click)="closeHidden()" aria-label="Close hidden posts">×</button>
+  </header>
+  <div class="hidden-body">
+    <p class="note">
+      Saved only in this browser{{ hiddenJobs.sessionOnly() ? ' for this visit (this browser blocks site storage)' : '' }}.
+      They're left out of your searches.
+    </p>
+    <ul class="hidden-list">
+      @for (h of hiddenJobs.hidden(); track h.id) {
+        <li>
+          <div>
+            <a [routerLink]="['/jobs', h.id]" (click)="closeHidden()">{{ h.workingTitle }}</a>
+            <p class="fine">{{ h.agency }} · hidden {{ h.hiddenAt | date: 'MMM d' }}</p>
+          </div>
+          <button type="button" class="pill" (click)="unhide(h.id)">Unhide</button>
+        </li>
+      } @empty {
+        <li class="fine">Nothing hidden.</li>
+      }
+    </ul>
+  </div>
+  <footer class="dialog-foot">
+    <button type="button" class="link" (click)="unhideAll()" [disabled]="!hiddenJobs.hidden().length">Unhide all</button>
+    <button type="button" class="primary" (click)="closeHidden()">Done</button>
   </footer>
 </dialog>

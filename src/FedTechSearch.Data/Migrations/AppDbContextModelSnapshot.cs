@@ -289,10 +289,71 @@ namespace FedTechSearch.Data.Migrations
                     b.ToTable("job_locations", (string)null);
                 });
 
+            modelBuilder.Entity("FedTechSearch.Core.Model.TagFeedback", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ClientHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CurrentValue")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("JobId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("SuggestedValue")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("TaxonomyVersion")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("Field", "CurrentValue");
+
+                    b.ToTable("tag_feedback", (string)null);
+                });
+
             modelBuilder.Entity("FedTechSearch.Core.Model.JobLocation", b =>
                 {
                     b.HasOne("FedTechSearch.Core.Model.Job", null)
                         .WithMany("GeoLocations")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.TagFeedback", b =>
+                {
+                    b.HasOne("FedTechSearch.Core.Model.Job", null)
+                        .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

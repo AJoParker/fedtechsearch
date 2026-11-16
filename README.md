@@ -98,6 +98,20 @@ UI on http://localhost:8080, API on http://localhost:5080.
 | `GET /api/jobs` | Search with filters; returns results plus facet counts |
 | `GET /api/jobs/{id}` | Full job, including duties |
 | `GET /api/meta` | Taxonomy lists for building filter UIs |
+| `POST /api/jobs/{id}/feedback` | "Wrong tag?" report: `{ field, currentValue?, suggestedValue?, note? }`. 204, 400 `{ error }`, 404, or 429 (20 per hour per client) |
+| `GET /api/admin/feedback/summary?days=90` | Reports grouped by field, wrong value and suggestion, with examples. Needs the `X-Admin-Key` header; 404 when no key is set |
+
+### Tag reports
+
+Visitors can flag a wrong tag ("Wrong tag?" under a job's details). `field` is one of `roleFamily`,
+`tech`, `workingTitle`, `seniority`, `clearance`, `workArrangement`; `currentValue` must be a tag the
+job shows (for `tech`, leave it empty and suggest one to report a missing technology), and
+suggestions must be taxonomy values. No IP address is stored, only a daily-rotating HMAC for abuse
+control.
+
+To read them, set `ADMIN_API_KEY` (and optionally `FEEDBACK_SALT`) in `.env`, for example with
+`openssl rand -hex 32`, restart the API, and open `/admin/feedback`. The page isn't linked
+anywhere; the key protects it.
 
 Filters repeat a key for several values. Values inside one filter are OR'ed, except `tech`,
 which requires all of them:
@@ -134,6 +148,7 @@ Other filters: `seniority`, `clearance`, `specialty`, `state`, `agency`, `series
 | `minPromotionPotential` | Lowest acceptable career-ladder ceiling, e.g. `13` |
 | `excludeAgency`, `excludeTech` | Repeatable; drops jobs that match any |
 | `excludeKeyword` | Words to leave out (web-search syntax) |
+| `hide` | Repeatable job IDs to leave out of results and counts (up to 500). The UI sends the posts a visitor hid, which are stored only in their browser; they never go in the shareable URL |
 
 ## Tests
 

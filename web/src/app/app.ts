@@ -3,10 +3,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Params, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { ThemeService } from './theme';
+import { ToastComponent } from './toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, ToastComponent],
   template: `
     <header class="top">
       <a class="brand" routerLink="/">
@@ -39,6 +40,7 @@ import { ThemeService } from './theme';
     <router-outlet />
 
     <footer class="foot"><a routerLink="/privacy">Privacy</a></footer>
+    <app-toast />
   `,
 })
 export class App {

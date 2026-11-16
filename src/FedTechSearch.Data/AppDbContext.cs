@@ -11,6 +11,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 {
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<JobLocation> JobLocations => Set<JobLocation>();
+    public DbSet<TagFeedback> TagFeedback => Set<TagFeedback>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,18 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         location.Property(l => l.JobId).HasMaxLength(64);
         location.HasIndex(l => new { l.Latitude, l.Longitude });
         location.HasIndex(l => new { l.State, l.City });
+
+        var feedback = modelBuilder.Entity<TagFeedback>();
+        feedback.ToTable("tag_feedback");
+        feedback.Property(f => f.JobId).HasMaxLength(64);
+        feedback.Property(f => f.Field).HasMaxLength(32);
+        feedback.Property(f => f.CurrentValue).HasMaxLength(100);
+        feedback.Property(f => f.SuggestedValue).HasMaxLength(100);
+        feedback.Property(f => f.Note).HasMaxLength(500);
+        feedback.Property(f => f.ClientHash).HasMaxLength(64);
+        feedback.HasOne<Job>().WithMany().HasForeignKey(f => f.JobId).OnDelete(DeleteBehavior.Cascade);
+        feedback.HasIndex(f => new { f.Field, f.CurrentValue });
+        feedback.HasIndex(f => f.CreatedAt);
     }
 }
 

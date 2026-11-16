@@ -16,6 +16,8 @@ services:
     build: { context: ., dockerfile: src/FedTechSearch.Api/Dockerfile }
     environment:
       ConnectionStrings__Jobs: Host=db;Database=fedtech;Username=fedtech;Password=fedtech
+      Admin__ApiKey: ${ADMIN_API_KEY:-}
+      Feedback__Salt: ${FEEDBACK_SALT:-}
     ports: ["5080:8080"]
     depends_on: { db: { condition: service_healthy } }
 

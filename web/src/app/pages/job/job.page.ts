@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, of, switchMap, tap } from 'rxjs';
 import { JobDetailComponent } from '../../job-detail';
 import { grade, seniorityLabel, usajobsLink } from '../../job-format';
+import { HiddenJobsStore } from '../../hidden-jobs.store';
 import { JobsService } from '../../jobs.service';
 import { JobDetail } from '../../models';
 
@@ -14,6 +15,12 @@ import { JobDetail } from '../../models';
   template: `
     <main class="job-page">
       <p><a routerLink="/">← Back to search</a></p>
+      @if (hiddenJobs.isHidden(id())) {
+        <div class="hidden-banner" role="status">
+          You hid this post from your searches.
+          <button type="button" class="link" (click)="hiddenJobs.unhide(id())">Unhide</button>
+        </div>
+      }
       @if (job(); as job) {
         <article class="card open">
           <div class="card-main">
@@ -64,6 +71,7 @@ import { JobDetail } from '../../models';
 })
 export class JobPage {
   private readonly jobs = inject(JobsService);
+  protected readonly hiddenJobs = inject(HiddenJobsStore);
 
   /** Bound from the :id route parameter. */
   readonly id = input.required<string>();

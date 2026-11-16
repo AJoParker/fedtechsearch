@@ -18,6 +18,8 @@ public sealed class PostgresFixture : IAsyncLifetime
 
     public ServiceProvider Services { get; private set; } = null!;
 
+    public string ConnectionString => _postgres.GetConnectionString();
+
     /// <summary>"Now" for date filters. Fixture jobs open 2026-11-10 and close 2026-11-24.</summary>
     public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
 

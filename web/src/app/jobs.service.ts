@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { JobDetail, JobSearchResponse } from './models';
+import { FeedbackSummary, JobDetail, JobSearchResponse, TagFeedbackInput } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class JobsService {
@@ -13,5 +13,17 @@ export class JobsService {
 
   get(id: string): Observable<JobDetail> {
     return this.http.get<JobDetail>(`/api/jobs/${encodeURIComponent(id)}`);
+  }
+
+  /** "Wrong tag?" report. 204 on success; 400 carries { error }; 429 means rate limited. */
+  feedback(id: string, body: TagFeedbackInput): Observable<void> {
+    return this.http.post<void>(`/api/jobs/${encodeURIComponent(id)}/feedback`, body);
+  }
+
+  feedbackSummary(adminKey: string, days: number): Observable<FeedbackSummary> {
+    return this.http.get<FeedbackSummary>('/api/admin/feedback/summary', {
+      params: { days },
+      headers: { 'X-Admin-Key': adminKey },
+    });
   }
 }

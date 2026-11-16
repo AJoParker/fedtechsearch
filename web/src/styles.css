@@ -26,6 +26,7 @@
   --header-muted: #c5d0e2;
   --field-bg: #ffffff;
   --backdrop: rgb(10 22 45 / .55);
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2314213d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --radius: 10px;
   font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--ink);
@@ -60,6 +61,7 @@
   --header-muted: #a3b1c7;
   --field-bg: #0e2038;
   --backdrop: rgb(2 8 20 / .7);
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23f5f5f5' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 body { background: var(--bg); color: var(--ink); }
@@ -69,6 +71,14 @@ body { margin: 0; }
 h1, h2, h3, p { margin: 0; }
 button { font: inherit; cursor: pointer; }
 input, select { font: inherit; }
+/* Our own chevron, set a little in from the edge (the native arrow can't be positioned).
+   !important keeps room for it when a component rule sets `padding` in shorthand. */
+select {
+  appearance: none; -webkit-appearance: none;
+  background-image: var(--chevron); background-repeat: no-repeat;
+  background-position: right 14px center; background-size: 11px 7px;
+  padding-right: 36px !important;
+}
 
 .top {
   position: sticky; top: 0; z-index: 5;
@@ -110,7 +120,7 @@ input, select { font: inherit; }
 .opt { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 14px; cursor: pointer; }
 .opt .name { flex: 1; }
 .opt .count { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
-.sort select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--ink); }
+.sort select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background-color: var(--panel); color: var(--ink); }
 .link { background: none; border: 0; padding: 4px 0; color: var(--link); font-size: 13px; }
 a { color: var(--link); }
 
@@ -177,7 +187,7 @@ dialog.filters::backdrop { background: var(--backdrop); }
 .control { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .control-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .control .note, .filter-section > .note { margin: -4px 0 2px; }
-.control-select { max-width: 240px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--field-bg); color: var(--ink); }
+.control-select { max-width: 240px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background-color: var(--field-bg); color: var(--ink); }
 .control .facet-filter { max-width: 320px; }
 .text-control { display: flex; gap: 8px; max-width: 420px; }
 .text-control input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--field-bg); color: var(--ink); }
@@ -261,3 +271,50 @@ a.brand { color: inherit; text-decoration: none; }
 .job-page > p:first-child { margin-bottom: 12px; }
 .prose p { margin: 12px 0; line-height: 1.5; }
 .foot { max-width: 1280px; margin: 0 auto; padding: 16px 24px 32px; font-size: 13px; color: var(--muted); }
+
+/* "Wrong tag?" report form */
+.tag-feedback { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+.tf-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.tag-feedback label, .admin-key label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.tag-feedback select, .tag-feedback input, .tag-feedback textarea, .admin-key input, .admin-key select {
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background-color: var(--field-bg); color: var(--ink); font: inherit;
+}
+.tag-feedback textarea { resize: vertical; }
+.tf-note .fine { align-self: flex-end; }
+.tf-actions { display: flex; align-items: center; gap: 16px; }
+.tf-message { color: var(--good); font-weight: 600; }
+.tf-error { color: var(--danger); font-size: 14px; }
+.primary:disabled { opacity: .5; cursor: default; }
+
+/* Admin: tag reports */
+.admin { display: flex; flex-direction: column; gap: 14px; }
+.admin-key { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
+.admin-key label:first-child { flex: 1 1 240px; }
+.report summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 14px 16px; cursor: pointer; }
+.report-count { margin-left: auto; min-width: 28px; padding: 2px 8px; border-radius: 999px; background: var(--accent); color: var(--on-accent); text-align: center; font-weight: 700; }
+.report ul { margin: 0; padding: 0 16px 14px 36px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.report-note { margin-top: 2px; color: var(--muted); font-style: italic; }
+
+/* Toast (e.g. "Post hidden · Undo") */
+.toast-region { position: fixed; left: 0; right: 0; bottom: 20px; z-index: 50; display: flex; justify-content: center; pointer-events: none; padding: 0 16px; }
+.toast {
+  pointer-events: auto; display: flex; align-items: center; gap: 14px; padding: 12px 14px 12px 18px; max-width: 100%;
+  border-radius: 999px; background: var(--ink); color: var(--bg); box-shadow: 0 8px 24px rgb(0 0 0 / .25); font-size: 15px;
+}
+.toast-action { border: 0; background: none; color: inherit; font-weight: 700; text-decoration: underline; padding: 4px 6px; }
+.toast-close { border: 0; background: none; color: inherit; opacity: .7; font-size: 20px; line-height: 1; padding: 0 4px; }
+
+/* Hidden posts */
+.hidden-link { font-size: 14px; }
+dialog.hidden-posts {
+  width: min(560px, calc(100vw - 32px)); max-height: 80vh; padding: 0;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink);
+}
+dialog.hidden-posts[open] { display: flex; flex-direction: column; }
+dialog.hidden-posts::backdrop { background: var(--backdrop); }
+dialog.hidden-posts .dialog-head h2 { font-size: 18px; }
+.hidden-body { overflow-y: auto; padding: 14px 20px; display: flex; flex-direction: column; gap: 8px; }
+.hidden-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.hidden-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.hidden-list li:last-child { border-bottom: 0; }
+.hidden-banner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; padding: 10px 14px; border-radius: var(--radius); background: var(--accent-soft); color: var(--accent-ink); }

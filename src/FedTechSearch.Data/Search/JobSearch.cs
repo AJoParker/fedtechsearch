@@ -65,6 +65,9 @@ public sealed class JobSearchRequest
     /// <summary>Words to leave out (web-search syntax, matched against the full text).</summary>
     public string? ExcludeKeyword { get; set; }
 
+    /// <summary>Job IDs to leave out: posts the visitor hid in their browser. Up to 500 are used.</summary>
+    public string[]? Hide { get; set; }
+
     /// <summary>relevance (default with q), newest (default without q), closing, salary, nearest (radius searches)</summary>
     public string? Sort { get; set; }
 
@@ -123,6 +126,7 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
 {
     private const string FtsConfig = "english";
     public const int DefaultRadiusMiles = 25;
+    private const int MaxHidden = 500;
     private static readonly int[] RadiusChoices = [0, 10, 25, 50, 100];
     public const string IndividualContributor = "Individual contributor";
     public const string PeopleManager = "People manager";
@@ -269,6 +273,11 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
         }
         if (r.MinPromotionPotential is { } potential) q = q.Where(j => j.PromotionPotential >= potential);
 
+        if (Has(r.Hide, out var hidden))
+        {
+            var ids = hidden.Take(MaxHidden).ToList();
+            q = q.Where(j => !ids.Contains(j.Id));
+        }
         if (Has(r.ExcludeAgency, out var notAgencies)) q = q.Where(j => !notAgencies.Contains(j.Agency));
         if (Has(r.ExcludeTech, out var notTech)) q = q.Where(j => !j.Tech.Any(t => notTech.Contains(t)));
         if (!string.IsNullOrWhiteSpace(r.ExcludeKeyword))

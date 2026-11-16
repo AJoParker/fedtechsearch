@@ -84,6 +84,19 @@ public sealed class FilterTests(PostgresFixture db)
     }
 
     [Fact]
+    public async Task Hidden_posts_are_left_out_of_results_and_counts()
+    {
+        var all = await Search(new());
+        var hide = all.Items.Take(2).Select(i => i.Id).Append("not-a-real-id").ToArray();
+
+        var result = await Search(new() { Hide = hide });
+
+        Assert.Equal(all.Total - 2, result.Total);
+        Assert.DoesNotContain(result.Items, i => hide.Contains(i.Id));
+        Assert.Equal(all.Total - 2, result.Facets["roleFamily"].Sum(f => f.Count));
+    }
+
+    [Fact]
     public async Task Role_type_facet_splits_individual_contributors_and_managers()
     {
         var facet = (await Search(new())).Facets["roleType"];

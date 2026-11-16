@@ -2,7 +2,9 @@ import { Component, computed, DestroyRef, ElementRef, inject, signal, viewChild 
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Params, Router, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { combineLatest, filter, Subscription } from 'rxjs';
+import { HiddenJobsStore } from '../../hidden-jobs.store';
 import { JobDetailComponent } from '../../job-detail';
 import { grade, seniorityLabel, usajobsLink } from '../../job-format';
 import { JobsService } from '../../jobs.service';
@@ -26,6 +28,8 @@ type Filters = Record<string, string[]>;
 const PAGE_SIZE = 20;
 const COLLAPSED_COUNT = 12;
 const DAY_MS = 86_400_000;
+/** Most recently hidden posts sent with a search; keeps the request URL well under server limits. */
+const MAX_HIDDEN_SENT = 300;
 
 @Component({
   selector: 'app-search-page',
@@ -39,6 +43,8 @@ export class SearchPage {
   private searchSub?: Subscription;
   private detailSub?: Subscription;
   private readonly filtersDialog = viewChild.required<ElementRef<HTMLDialogElement>>('filtersDialog');
+  private readonly hiddenDialog = viewChild.required<ElementRef<HTMLDialogElement>>('hiddenDialog');
+  protected readonly hiddenJobs = inject(HiddenJobsStore);
   private readonly filtersPane = viewChild.required<ElementRef<HTMLElement>>('filtersPane');
   private readonly filtersNav = viewChild.required<ElementRef<HTMLElement>>('filtersNav');
   /** While the dialog is open, the first change adds a history entry and later ones replace it. */
@@ -121,8 +127,12 @@ export class SearchPage {
 
   constructor() {
     // The URL is the single source of truth: every change navigates, and this reloads.
-    // Back/forward and shared links go through the same path.
-    const sub = this.route.queryParamMap.subscribe((params) => {
+    // Back/forward and shared links go through the same path. Hidden posts (kept in this
+    // browser) also trigger a reload, and the first search waits until they've loaded.
+    const sub = combineLatest([
+      this.route.queryParamMap,
+      toObservable(this.hiddenJobs.ids).pipe(filter((ids) => ids !== null)),
+    ]).subscribe(([params]) => {
       this.readUrl(params);
       this.load();
     });
@@ -347,6 +357,31 @@ export class SearchPage {
     }
   }
 
+  // ---- hidden posts ------------------------------------------------------------------
+
+  protected openHidden(): void {
+    this.hiddenDialog().nativeElement.showModal();
+  }
+
+  protected closeHidden(): void {
+    this.hiddenDialog().nativeElement.close();
+  }
+
+  protected onHiddenDialogClick(event: MouseEvent): void {
+    if (event.target === this.hiddenDialog().nativeElement) this.closeHidden();
+  }
+
+  /** Closes the list once the last hidden post is restored. */
+  protected async unhide(id: string): Promise<void> {
+    await this.hiddenJobs.unhide(id);
+    if (!this.hiddenJobs.hidden().length) this.closeHidden();
+  }
+
+  protected async unhideAll(): Promise<void> {
+    await this.hiddenJobs.unhideAll();
+    this.closeHidden();
+  }
+
   // ---- card helpers -------------------------------------------------------------------
 
   protected isNew(job: JobListItem): boolean {
@@ -414,7 +449,10 @@ export class SearchPage {
     this.error.set('');
     this.openId.set(null);
     this.searchSub?.unsubscribe();
-    this.searchSub = this.jobs.search(this.buildParams().set('pageSize', PAGE_SIZE)).subscribe({
+    // Hidden IDs go to the API only, never into the shareable URL (buildParams).
+    let params = this.buildParams().set('pageSize', PAGE_SIZE);
+    for (const id of (this.hiddenJobs.ids() ?? []).slice(0, MAX_HIDDEN_SENT)) params = params.append('hide', id);
+    this.searchSub = this.jobs.search(params).subscribe({
       next: (r) => {
         this.response.set(r);
         this.loading.set(false);

@@ -155,6 +155,9 @@ a Testcontainers test that a 50-mile Houston search returns an Ellington Field f
 
 ## Phase 3: "Wrong tag?" feedback
 
+> **Done** (2026-11-15). Also added an `/admin/feedback` page that reads the summary with the admin
+> key, and a same-day duplicate guard (same client, job and report are stored once).
+
 Turns real users into a tuning loop for `taxonomy.json`.
 
 - Table `tag_feedback`: `Id`, `JobId`, `Field` (`roleFamily`, `tech`, `workingTitle`,
