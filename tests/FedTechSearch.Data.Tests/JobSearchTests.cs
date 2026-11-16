@@ -17,7 +17,7 @@ public sealed class JobSearchTests(PostgresFixture db)
     {
         var result = await Search(new JobSearchRequest { PageSize = 100 });
 
-        Assert.Equal(7, result.Total);
+        Assert.Equal(9, result.Total);
         Assert.NotEmpty(result.Facets["roleFamily"]);
         Assert.NotEmpty(result.Facets["tech"]);
     }
@@ -25,7 +25,7 @@ public sealed class JobSearchTests(PostgresFixture db)
     [Fact]
     public async Task Location_matches_a_city_inside_a_multi_location_posting()
     {
-        var result = await Search(new JobSearchRequest { Location = "Baltimore, MD", IncludeRemote = false });
+        var result = await Search(new JobSearchRequest { Location = "Baltimore, MD", IncludeRemote = false, Radius = 0 });
 
         var job = Assert.Single(result.Items);
         Assert.Equal("Multiple Locations", job.LocationDisplay);
@@ -34,9 +34,10 @@ public sealed class JobSearchTests(PostgresFixture db)
     [Fact]
     public async Task Location_includes_remote_jobs_by_default()
     {
-        var result = await Search(new JobSearchRequest { Location = "Houston, TX" });
+        var result = await Search(new JobSearchRequest { Location = "Houston, TX", Radius = 0 });
 
-        var job = Assert.Single(result.Items);
-        Assert.Equal("Remote", job.WorkArrangement);
+        Assert.Equal(2, result.Total);
+        Assert.Contains(result.Items, j => j.WorkArrangement == "Remote");
+        Assert.Contains(result.Items, j => j.LocationDisplay == "Houston, Texas");
     }
 }

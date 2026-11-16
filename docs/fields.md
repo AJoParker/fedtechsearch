@@ -27,6 +27,20 @@ optional LLM pass (see the README).
 | `promotionPotential` | 1 to 15 | `PromotionPotential`; values outside 1-15 (e.g. "00") are dropped. |
 | `openToPublic` | true/false | HiringPath includes `public`. False means status candidates only (current or former federal employees, and similar). |
 
+## Duty locations and radius search
+
+Each job's `PositionLocation` entries that carry real coordinates are stored in `job_locations`
+(name, town, state, country, latitude, longitude). Remote and "negotiable" placeholders and 0/0
+coordinates are skipped. The town is the segment before the state, so "Pentagon, Arlington,
+Virginia" is Arlington. Rows are replaced only when a job's location set changes
+(`LocationsHash`).
+
+A searched city is placed using our own data, with no geocoding service: the average
+coordinates of stored locations with that town and state (with no state, the state with the
+most postings). A radius search matches jobs with any duty location within the circle
+(haversine distance, prefiltered by a lat/lon box), plus exact name matches as a fallback.
+Cities with no stored coordinates fall back to exact name matching.
+
 ## Structured fields kept from USAJOBS
 
 Official title, agency, department, sub-agency, locations, states, series, pay plan, low

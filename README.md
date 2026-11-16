@@ -107,12 +107,18 @@ which requires all of them:
 ```
 
 `location` takes free text such as `Houston, TX, US` or `Washington, DC`. State abbreviations
-and a trailing `US`/`USA` are understood, and city and state must match the same duty
-location. Remote jobs are included unless `includeRemote=false`:
+and a trailing `US`/`USA` are understood. A city searches **25 miles** around it by default;
+`radius` takes `10`, `25`, `50`, `100`, or `0` for the exact city name. A state (`MD`) matches the
+whole state. Remote jobs are included unless `includeRemote=false`. `sort=nearest` orders a radius
+search by distance, and each item gets `distanceMiles`:
 
 ```
-/api/jobs?location=Houston,%20TX&includeRemote=false
+/api/jobs?location=Houston,%20TX&radius=50&sort=nearest&includeRemote=false
 ```
+
+The response's `location` block says what happened: `{ "mode": "radius", "place": "Houston, Texas",
+"radiusMiles": 50 }`. `mode` is `text` when the city is unknown (we fall back to exact name
+matching) or `radius=0`, and `state` for state searches.
 
 Other filters: `seniority`, `clearance`, `specialty`, `state`, `agency`, `series`,
 `directHire`, `openToPublic`, `supervisory`, `includeClosed`, `sort`

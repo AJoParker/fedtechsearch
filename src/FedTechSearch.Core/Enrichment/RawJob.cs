@@ -1,5 +1,8 @@
 namespace FedTechSearch.Core.Enrichment;
 
+/// <summary>A duty location with coordinates. City is the town ("Arlington" for "Pentagon, Arlington, Virginia").</summary>
+public sealed record GeoLocation(string Name, string City, string State, string Country, double Latitude, double Longitude);
+
 /// <summary>
 /// A job announcement normalized out of the USAJOBS response, before any enrichment.
 /// </summary>
@@ -16,6 +19,9 @@ public sealed class RawJob
     public string LocationDisplay { get; set; } = "";
     public List<string> Locations { get; set; } = [];
     public List<string> States { get; set; } = [];
+
+    /// <summary>Duty locations that have real coordinates (placeholders and 0/0 are left out).</summary>
+    public List<GeoLocation> GeoLocations { get; set; } = [];
     public List<string> Series { get; set; } = [];
     public string? PayPlan { get; set; }
     public int? LowGrade { get; set; }

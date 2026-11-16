@@ -62,6 +62,7 @@ public static partial class UsaJobsMapper
                 .Where(s => s.Length > 0).Distinct().ToList(),
             States = locations.Select(l => Str(l, "CountrySubDivisionCode")).OfType<string>()
                 .Where(s => s.Length > 0).Distinct().ToList(),
+            GeoLocations = locations.Select(GeoOf).OfType<GeoLocation>().Distinct().ToList(),
             Series = ArrayOf(d, "JobCategory").Select(c => Str(c, "Code")).OfType<string>()
                 .Where(s => s.Length > 0).Distinct().ToList(),
             PayPlan = NullIfEmpty(Str(FirstOf(d, "JobGrade"), "Code")),
@@ -91,6 +92,37 @@ public static partial class UsaJobsMapper
             PromotionPotential = Int(details, "PromotionPotential") is >= 1 and <= 15 and var pp ? pp : null,
             HowToApply = Clean(Str(details, "HowToApply")),
         };
+    }
+
+    private static readonly Regex PlaceholderLocation = new(
+        @"remote job|negotiable|anywhere in", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+    /// <summary>
+    /// A location with usable coordinates, or null. Remote and "negotiable" placeholders and
+    /// 0/0 coordinates are skipped so they never match a radius search.
+    /// </summary>
+    public static GeoLocation? GeoOf(JsonElement location)
+    {
+        var name = Str(location, "LocationName")?.Trim() ?? "";
+        var lat = Dec(location, "Latitude");
+        var lon = Dec(location, "Longitude");
+        if (name.Length == 0 || lat is null || lon is null || (lat == 0 && lon == 0)) return null;
+        if (PlaceholderLocation.IsMatch(name)) return null;
+        if (lat is < -90 or > 90 || lon is < -180 or > 180) return null;
+
+        var state = Str(location, "CountrySubDivisionCode")?.Trim() ?? "";
+        var country = Str(location, "CountryCode")?.Trim() ?? "";
+        return new GeoLocation(name, CityOf(name, state, country), state, country, (double)lat, (double)lon);
+    }
+
+    /// <summary>"Pentagon, Arlington, Virginia" → "Arlington": the segment just before the state or country.</summary>
+    private static string CityOf(string name, string state, string country)
+    {
+        var parts = name.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+        while (parts.Count > 1 && (parts[^1].Equals(state, StringComparison.OrdinalIgnoreCase)
+                                   || parts[^1].Equals(country, StringComparison.OrdinalIgnoreCase)))
+            parts.RemoveAt(parts.Count - 1);
+        return parts.Count > 0 ? parts[^1] : name;
     }
 
     // ---- JsonElement helpers -------------------------------------------------------------

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -81,6 +82,13 @@ public sealed class IngestService
         var ids = raws.Select(r => r.Id).ToList();
         var existing = await _db.Jobs.Where(j => ids.Contains(j.Id)).ToDictionaryAsync(j => j.Id, cancellationToken);
 
+        // Location rows are replaced only for jobs whose location set changed (or was never stored).
+        var moved = raws.Where(r => !existing.TryGetValue(r.Id, out var j) || j.LocationsHash != LocationsHash(r)).ToList();
+        var movedExisting = moved.Where(r => existing.ContainsKey(r.Id)).Select(r => r.Id).ToList();
+        if (movedExisting.Count > 0)
+            await _db.JobLocations.Where(l => movedExisting.Contains(l.JobId)).ExecuteDeleteAsync(cancellationToken);
+        var movedIds = moved.Select(r => r.Id).ToHashSet();
+
         foreach (var raw in raws)
         {
             total.Seen++;
@@ -94,6 +102,15 @@ public sealed class IngestService
 
             var needsEnrichment = job.ContentHash != hash || job.EnrichmentVersion != _enricher.EnrichmentVersion;
             ApplyRaw(job, raw);
+            if (movedIds.Contains(raw.Id))
+            {
+                _db.JobLocations.AddRange(raw.GeoLocations.Select(g => new JobLocation
+                {
+                    JobId = raw.Id, Name = g.Name, City = g.City, State = g.State, Country = g.Country,
+                    Latitude = g.Latitude, Longitude = g.Longitude
+                }));
+                job.LocationsHash = LocationsHash(raw);
+            }
             job.LastSeen = now;
             job.IsActive = forceActive || raw.CloseDate is null || raw.CloseDate >= now;
 
@@ -183,6 +200,14 @@ public sealed class IngestService
             raw.PayPlan, raw.LowGrade, raw.HighGrade, raw.SalaryMin, raw.SalaryMax, raw.SalaryInterval,
             raw.TeleworkEligible, raw.RemoteIndicator, raw.SecurityClearance, raw.LocationDisplay,
             string.Join("\u001e", raw.HiringPaths), raw.WhoMayApply, string.Join("\u001e", raw.Series));
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(material)));
+    }
+
+    public static string LocationsHash(RawJob raw)
+    {
+        var material = string.Join("\u001e", raw.GeoLocations.Select(g =>
+            string.Join("\u001f", g.Name, g.State, g.Country,
+                g.Latitude.ToString("F5", CultureInfo.InvariantCulture), g.Longitude.ToString("F5", CultureInfo.InvariantCulture))));
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(material)));
     }
 

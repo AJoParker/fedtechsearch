@@ -113,6 +113,10 @@ works at `/`, and both test projects pass.
 
 ## Phase 2: Radius search ("within 50 miles of Houston, TX")
 
+> **Done** (2026-11-15). Cities default to 25 miles (Exact city / 10 / 25 / 50 / 100), cards show
+> distance, and there is a "Nearest" sort. Deviation: places are resolved with a live query
+> over `job_locations` (about 3.4k rows) instead of a `places` view, which isn't needed at this size.
+
 Text matching on location names misses nearby duty stations (Ellington Field, Sugar Land
 for Houston). USAJOBS gives `Latitude`/`Longitude` per `PositionLocation`; the mapper drops
 them today.

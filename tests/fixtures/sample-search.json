@@ -2,8 +2,8 @@
   "LanguageCode": "EN",
   "SearchParameters": {},
   "SearchResult": {
-    "SearchResultCount": 7,
-    "SearchResultCountAll": 7,
+    "SearchResultCount": 9,
+    "SearchResultCountAll": 9,
     "SearchResultItems": [
       {
         "MatchedObjectId": "812345600",
@@ -21,8 +21,8 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "District of Columbia",
               "CityName": "Washington, District of Columbia",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -77.0364,
+              "Latitude": 38.8951
             }
           ],
           "OrganizationName": "Veterans Affairs, Office of Information and Technology",
@@ -122,8 +122,8 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "Maryland",
               "CityName": "Fort Meade, Maryland",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -76.7433,
+              "Latitude": 39.1086
             }
           ],
           "OrganizationName": "Defense Information Systems Agency",
@@ -225,8 +225,8 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "Virginia",
               "CityName": "Arlington, Virginia",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -77.091,
+              "Latitude": 38.8816
             }
           ],
           "OrganizationName": "Cybersecurity and Infrastructure Security Agency",
@@ -423,16 +423,16 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "Maryland",
               "CityName": "Baltimore, Maryland",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -76.6122,
+              "Latitude": 39.2904
             },
             {
               "LocationName": "Woodlawn, Maryland",
               "CountryCode": "United States",
               "CountrySubDivisionCode": "Maryland",
               "CityName": "Woodlawn, Maryland",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -76.7286,
+              "Latitude": 39.3226
             }
           ],
           "OrganizationName": "Social Security Administration",
@@ -532,8 +532,8 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "District of Columbia",
               "CityName": "Washington, District of Columbia",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -77.0364,
+              "Latitude": 38.8951
             }
           ],
           "OrganizationName": "Office of the Chief Information Officer",
@@ -632,8 +632,8 @@
               "CountryCode": "United States",
               "CountrySubDivisionCode": "Maryland",
               "CityName": "Gaithersburg, Maryland",
-              "Longitude": 0,
-              "Latitude": 0
+              "Longitude": -77.2014,
+              "Latitude": 39.1434
             }
           ],
           "OrganizationName": "National Institute of Standards and Technology",
@@ -698,6 +698,200 @@
                 "Conducts research on evaluating large language models and generative AI systems using PyTorch.",
                 "Develops evaluation tooling in Python and Golang and publishes results.",
                 "Works with computer vision benchmarks and deep learning models."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Not Required",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345690",
+        "MatchedObjectDescriptor": {
+          "PositionID": "NASA-26-HOU-01",
+          "PositionTitle": "IT Specialist (SYSADMIN)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345690",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345690?apply"
+          ],
+          "PositionLocationDisplay": "Houston, Texas",
+          "PositionLocation": [
+            {
+              "LocationName": "Houston, Texas",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Texas",
+              "CityName": "Houston, Texas",
+              "Latitude": 29.7604,
+              "Longitude": -95.3698
+            }
+          ],
+          "OrganizationName": "Lyndon B. Johnson Space Center",
+          "DepartmentName": "National Aeronautics and Space Administration",
+          "JobCategory": [
+            {
+              "Name": "Computer Science",
+              "Code": "1550"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Ph.D. or equivalent experience in computer science with publications in machine learning.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "104604.0",
+              "MaximumRange": "195200.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Serves as a IT Specialist (SYSADMIN) supporting mission systems.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "12",
+              "HighGrade": "12",
+              "PromotionPotential": "12",
+              "HiringPath": [
+                "public"
+              ],
+              "MajorDuties": [
+                "Administers Linux servers and Ansible automation for mission control systems."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Not Required",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345691",
+        "MatchedObjectDescriptor": {
+          "PositionID": "NASA-26-ELL-02",
+          "PositionTitle": "IT Specialist (NETWORK)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345691",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345691?apply"
+          ],
+          "PositionLocationDisplay": "Ellington Field, Texas",
+          "PositionLocation": [
+            {
+              "LocationName": "Ellington Field, Texas",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Texas",
+              "CityName": "Ellington Field, Texas",
+              "Latitude": 29.6073,
+              "Longitude": -95.1588
+            }
+          ],
+          "OrganizationName": "Lyndon B. Johnson Space Center",
+          "DepartmentName": "National Aeronautics and Space Administration",
+          "JobCategory": [
+            {
+              "Name": "Computer Science",
+              "Code": "1550"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Ph.D. or equivalent experience in computer science with publications in machine learning.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "104604.0",
+              "MaximumRange": "195200.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Serves as a IT Specialist (NETWORK) supporting mission systems.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "12",
+              "HighGrade": "12",
+              "PromotionPotential": "12",
+              "HiringPath": [
+                "public"
+              ],
+              "MajorDuties": [
+                "Designs and maintains Cisco routing and switching for flight operations networks."
               ],
               "Education": "",
               "Requirements": "U.S. Citizenship Required",

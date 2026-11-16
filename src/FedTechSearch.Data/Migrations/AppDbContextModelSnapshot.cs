@@ -92,6 +92,10 @@ namespace FedTechSearch.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text[]");
 
+                    b.Property<string>("LocationsHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("LowGrade")
                         .HasColumnType("integer");
 
@@ -237,6 +241,66 @@ namespace FedTechSearch.Data.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Tech"), "gin");
 
                     b.ToTable("jobs", (string)null);
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.JobLocation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("JobId")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("Latitude", "Longitude");
+
+                    b.HasIndex("State", "City");
+
+                    b.ToTable("job_locations", (string)null);
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.JobLocation", b =>
+                {
+                    b.HasOne("FedTechSearch.Core.Model.Job", null)
+                        .WithMany("GeoLocations")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.Job", b =>
+                {
+                    b.Navigation("GeoLocations");
                 });
 #pragma warning restore 612, 618
         }

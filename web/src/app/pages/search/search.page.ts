@@ -12,7 +12,9 @@ import {
   FILTER_SECTIONS,
   FilterControl,
   FilterSection,
+  DEFAULT_RADIUS,
   HIRING_PATH_SHORT,
+  RADIUS_OPTIONS,
   JobDetail,
   JobListItem,
   JobSearchResponse,
@@ -51,6 +53,9 @@ export class SearchPage {
   protected readonly q = signal('');
   protected readonly location = signal('');
   protected readonly includeRemote = signal(true);
+  /** Miles around a city; 0 = exact city. Default 25 stays out of the URL. */
+  protected readonly radius = signal(DEFAULT_RADIUS);
+  protected readonly radiusOptions = RADIUS_OPTIONS;
   protected readonly filters = signal<Filters>({});
   protected readonly sort = signal('newest');
   protected readonly page = signal(1);
@@ -71,6 +76,15 @@ export class SearchPage {
   protected readonly total = computed(() => this.response()?.total ?? 0);
   protected readonly facets = computed(() => this.response()?.facets ?? {});
   protected readonly pageCount = computed(() => Math.max(1, Math.ceil(this.total() / PAGE_SIZE)));
+  protected readonly locationMode = computed(() => this.response()?.location?.mode ?? null);
+  /** City searches get the "Within" select; state searches don't. */
+  protected readonly isCitySearch = computed(() => this.locationMode() === 'radius' || this.locationMode() === 'text');
+  /** A radius was asked for, but we have no coordinates for this city. */
+  protected readonly noMapData = computed(() => this.locationMode() === 'text' && this.radius() > 0);
+  /** "nearest" only means something with a radius; show the default otherwise. */
+  protected readonly effectiveSort = computed(() =>
+    this.sort() === 'nearest' && this.locationMode() !== 'radius' ? (this.q() ? 'relevance' : 'newest') : this.sort(),
+  );
 
   /** Sections in nav order, grouped under their headings. */
   protected readonly groups = computed(() => {
@@ -85,7 +99,10 @@ export class SearchPage {
 
   protected readonly activeChips = computed(() => {
     const chips: { key: string; value: string; label: string }[] = [];
-    if (this.location()) chips.push({ key: 'location', value: this.location(), label: this.location() });
+    if (this.location()) {
+      const miles = this.locationMode() === 'radius' ? ` · ${this.radius()} mi` : '';
+      chips.push({ key: 'location', value: this.location(), label: this.location() + miles });
+    }
     for (const section of this.sections)
       for (const control of section.controls)
         for (const value of this.filters()[control.key] ?? [])
@@ -265,6 +282,7 @@ export class SearchPage {
     if (key === 'location') {
       this.location.set('');
       this.includeRemote.set(true);
+      this.radius.set(DEFAULT_RADIUS);
       this.changed();
     } else this.toggle(key, value);
   }
@@ -274,6 +292,7 @@ export class SearchPage {
     this.q.set('');
     this.location.set('');
     this.includeRemote.set(true);
+    this.radius.set(DEFAULT_RADIUS);
     this.find.set({});
     this.changed();
   }
@@ -281,6 +300,21 @@ export class SearchPage {
   protected setIncludeRemote(value: boolean): void {
     this.includeRemote.set(value);
     this.changed();
+  }
+
+  protected setRadius(value: string): void {
+    this.radius.set(Number(value));
+    this.changed();
+  }
+
+  protected radiusLabel(miles: number): string {
+    return miles === 0 ? 'Exact city' : `${miles} mi`;
+  }
+
+  protected distanceLabel(job: JobListItem): string | null {
+    const miles = job.distanceMiles;
+    if (miles === null || miles === undefined) return null;
+    return miles < 1 ? 'under 1 mi away' : `${Math.round(miles)} mi away`;
   }
 
   protected setSort(value: string): void {
@@ -357,6 +391,7 @@ export class SearchPage {
     if (this.q()) p = p.set('q', this.q());
     if (this.location()) p = p.set('location', this.location());
     if (this.location() && !this.includeRemote()) p = p.set('includeRemote', 'false');
+    if (this.location() && this.radius() !== DEFAULT_RADIUS) p = p.set('radius', this.radius());
     for (const key of FILTER_KEYS) for (const v of this.filters()[key] ?? []) p = p.append(key, v);
     const defaultSort = this.q() ? 'relevance' : 'newest';
     if (this.sort() !== defaultSort && !(this.sort() === 'relevance' && !this.q())) p = p.set('sort', this.sort());
@@ -405,6 +440,8 @@ export class SearchPage {
     this.q.set(url.get('q') ?? '');
     this.location.set(url.get('location') ?? '');
     this.includeRemote.set(url.get('includeRemote') !== 'false');
+    const radius = Number(url.get('radius'));
+    this.radius.set(url.has('radius') && RADIUS_OPTIONS.includes(radius) ? radius : DEFAULT_RADIUS);
     this.sort.set(url.get('sort') ?? (this.q() ? 'relevance' : 'newest'));
     this.page.set(Number(url.get('page')) || 1);
   }

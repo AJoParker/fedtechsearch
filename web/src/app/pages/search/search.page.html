@@ -10,20 +10,33 @@
         <input type="checkbox" [checked]="includeRemote()" (change)="setIncludeRemote($any($event.target).checked)" />
         <span class="name">Include remote jobs</span>
       </label>
+      @if (isCitySearch()) {
+        <label class="sort">
+          Within
+          <select [value]="radius()" (change)="setRadius($any($event.target).value)">
+            @for (r of radiusOptions; track r) { <option [value]="r" [selected]="r === radius()">{{ radiusLabel(r) }}</option> }
+          </select>
+        </label>
+      }
     }
     <p class="total" aria-live="polite">
       @if (loading()) { Searching... } @else { {{ total() }} {{ total() === 1 ? 'job' : 'jobs' }} }
     </p>
     <label class="sort">
       Sort
-      <select [value]="sort()" (change)="setSort($any($event.target).value)">
+      <select [value]="effectiveSort()" (change)="setSort($any($event.target).value)">
         @if (q()) { <option value="relevance">Best match</option> }
+        @if (locationMode() === 'radius') { <option value="nearest">Nearest</option> }
         <option value="newest">Newest</option>
         <option value="closing">Closing soon</option>
         <option value="salary">Highest salary</option>
       </select>
     </label>
   </div>
+
+  @if (noMapData()) {
+    <p class="fine location-note">No map data for {{ response()?.location?.place }}. Showing exact matches.</p>
+  }
 
   <nav class="section-chips" aria-label="Filter categories">
     @for (s of sections; track s.id) {
@@ -70,6 +83,7 @@
         <p class="meta">
           <span>{{ job.agency }}</span>
           <span>{{ job.locationDisplay }}</span>
+          @if (distanceLabel(job); as distance) { <span class="distance">{{ distance }}</span> }
           @if (job.closeDate) { <span>Closes {{ job.closeDate | date: 'MMM d' }}</span> }
         </p>
         <div class="badges">

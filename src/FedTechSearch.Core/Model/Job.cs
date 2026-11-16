@@ -19,6 +19,7 @@ public sealed class Job
     public string LocationDisplay { get; set; } = "";
     public List<string> Locations { get; set; } = [];
     public List<string> States { get; set; } = [];
+    public List<JobLocation> GeoLocations { get; set; } = [];
     public List<string> Series { get; set; } = [];
     public string? PayPlan { get; set; }
     public int? LowGrade { get; set; }
@@ -63,5 +64,8 @@ public sealed class Job
     public DateTime FirstSeen { get; set; }
     public DateTime LastSeen { get; set; }
     public string ContentHash { get; set; } = "";
+
+    /// <summary>Hash of the stored <see cref="GeoLocations"/>; rows are replaced only when it changes.</summary>
+    public string LocationsHash { get; set; } = "";
     public int EnrichmentVersion { get; set; }
 }

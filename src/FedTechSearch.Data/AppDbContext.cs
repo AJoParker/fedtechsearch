@@ -10,6 +10,7 @@ namespace FedTechSearch.Data;
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Job> Jobs => Set<Job>();
+    public DbSet<JobLocation> JobLocations => Set<JobLocation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         job.HasIndex(j => j.HiringPaths).HasMethod("gin");
         job.HasIndex(j => j.Department);
         job.HasIndex(j => j.PromotionPotential);
+        job.HasMany(j => j.GeoLocations).WithOne().HasForeignKey(l => l.JobId).OnDelete(DeleteBehavior.Cascade);
+
+        var location = modelBuilder.Entity<JobLocation>();
+        location.ToTable("job_locations");
+        location.Property(l => l.JobId).HasMaxLength(64);
+        location.HasIndex(l => new { l.Latitude, l.Longitude });
+        location.HasIndex(l => new { l.State, l.City });
     }
 }
 

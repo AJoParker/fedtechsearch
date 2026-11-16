@@ -18,6 +18,9 @@ public sealed class JobSearchRequest
     public string? Location { get; set; }
 
     public bool? IncludeRemote { get; set; }
+
+    /// <summary>Miles around a city: 10, 25, 50 or 100; 0 means the exact city only. Default 25.</summary>
+    public int? Radius { get; set; }
     public string[]? RoleFamily { get; set; }
     public string[]? Tech { get; set; }
     public string[]? Specialty { get; set; }
@@ -62,7 +65,7 @@ public sealed class JobSearchRequest
     /// <summary>Words to leave out (web-search syntax, matched against the full text).</summary>
     public string? ExcludeKeyword { get; set; }
 
-    /// <summary>relevance (default with q), newest (default without q), closing, salary</summary>
+    /// <summary>relevance (default with q), newest (default without q), closing, salary, nearest (radius searches)</summary>
     public string? Sort { get; set; }
 
     public int? Page { get; set; }
@@ -97,20 +100,30 @@ public sealed record JobListItem(
     int? PromotionPotential,
     DateTime FirstSeen,
     string Url,
-    string Snippet);
+    string Snippet,
+    double? DistanceMiles = null);
 
 public sealed record FacetValue(string Value, int Count);
+
+/// <summary>
+/// How a location search was applied. Mode is "radius" (miles around a resolved city), "text"
+/// (exact city name, or a city we have no coordinates for) or "state".
+/// </summary>
+public sealed record LocationInfo(string Mode, string? Place, int? RadiusMiles);
 
 public sealed record JobSearchResponse(
     int Total,
     int Page,
     int PageSize,
     IReadOnlyList<JobListItem> Items,
-    IReadOnlyDictionary<string, IReadOnlyList<FacetValue>> Facets);
+    IReadOnlyDictionary<string, IReadOnlyList<FacetValue>> Facets,
+    LocationInfo? Location = null);
 
 public sealed class JobSearch(AppDbContext db, TimeProvider time)
 {
     private const string FtsConfig = "english";
+    public const int DefaultRadiusMiles = 25;
+    private static readonly int[] RadiusChoices = [0, 10, 25, 50, 100];
     public const string IndividualContributor = "Individual contributor";
     public const string PeopleManager = "People manager";
 
@@ -121,7 +134,9 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
     {
         var page = Math.Max(1, r.Page ?? 1);
         var pageSize = Math.Clamp(r.PageSize ?? 20, 1, 100);
-        var q = Filter(db.Jobs.AsNoTracking(), r);
+        var loc = LocationQuery.Parse(r.Location);
+        var area = await ResolveAreaAsync(loc, r.Radius, cancellationToken);
+        var q = Filter(db.Jobs.AsNoTracking(), r, loc, area);
 
         // Facets are counted over the filtered set. Federal tech postings number in the low
         // thousands, so counting in memory over a narrow projection is cheap and simple.
@@ -155,7 +170,7 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
                 .Select(x => x.PromotionPotential!.Value.ToString())).OrderBy(f => int.Parse(f.Value)).ToList()
         };
 
-        var sorted = Sort(q, r);
+        var sorted = Sort(q, r, area);
         var rows = await sorted
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -175,13 +190,19 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
             j.Supervisory, j.MayCloseEarly, HiringPath.LabelsFor(j.HiringPaths), j.PromotionPotential, j.FirstSeen,
             j.Url, Truncate(j.Summary, 280))).ToList();
 
-        return new JobSearchResponse(facetRows.Count, page, pageSize, items, facets);
+        if (area is not null) items = await WithDistancesAsync(items, area, cancellationToken);
+
+        var location = loc is null ? null
+            : loc.City is null ? new LocationInfo("state", loc.State, null)
+            : area is null ? new LocationInfo("text", (loc.State ?? loc.Region) is { } w ? $"{loc.City}, {w}" : loc.City, null)
+            : new LocationInfo("radius", area.Place, area.Miles);
+        return new JobSearchResponse(facetRows.Count, page, pageSize, items, facets, location);
     }
 
     public Task<Job?> GetAsync(string id, CancellationToken cancellationToken) =>
         db.Jobs.AsNoTracking().FirstOrDefaultAsync(j => j.Id == id, cancellationToken);
 
-    private IQueryable<Job> Filter(IQueryable<Job> q, JobSearchRequest r)
+    private IQueryable<Job> Filter(IQueryable<Job> q, JobSearchRequest r, LocationQuery? loc, GeoArea? area)
     {
         if (r.IncludeClosed != true) q = q.Where(j => j.IsActive);
 
@@ -192,8 +213,8 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
                 .Matches(EF.Functions.WebSearchToTsQuery(FtsConfig, text)));
         }
 
-        if (LocationQuery.Parse(r.Location) is { } loc)
-            q = q.Where(Located(loc, r.IncludeRemote != false));
+        if (loc is not null)
+            q = q.Where(Located(loc, r.IncludeRemote != false, area));
 
         // Within a facet values are OR'ed ("any of"), except tech, which is AND'ed:
         // ".NET + Azure" should mean jobs that ask for both.
@@ -259,7 +280,7 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
         return q;
     }
 
-    private static Expression<Func<Job, bool>> Located(LocationQuery loc, bool includeRemote)
+    private static Expression<Func<Job, bool>> Located(LocationQuery loc, bool includeRemote, GeoArea? area)
     {
         var remote = includeRemote && loc.IsUs;
 
@@ -277,16 +298,107 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
         var cityInner = "%, " + city + ",%";
         var within = loc.State ?? loc.Region;
         var withinLast = within is null ? null : "%, " + Escape(within);
-        return j => j.Locations.Any(l => (EF.Functions.ILike(l, cityFirst) || EF.Functions.ILike(l, cityInner))
-                                         && (withinLast == null || EF.Functions.ILike(l, withinLast)))
+        if (area is null)
+            return j => j.Locations.Any(l => (EF.Functions.ILike(l, cityFirst) || EF.Functions.ILike(l, cityInner))
+                                             && (withinLast == null || EF.Functions.ILike(l, withinLast)))
+                        || (remote && j.WorkArrangement == WorkArrangement.Remote);
+
+        // Radius: any duty location within the circle. The exact-name match stays as a fallback
+        // for locations USAJOBS sent without coordinates.
+        var inBox = area.InBox();
+        var angle = area.Angle();
+        var maxAngle = area.MaxAngle;
+        return j => j.GeoLocations.AsQueryable().Where(inBox).Select(angle).Any(a => a <= maxAngle)
+                    || j.Locations.Any(l => (EF.Functions.ILike(l, cityFirst) || EF.Functions.ILike(l, cityInner))
+                                            && (withinLast == null || EF.Functions.ILike(l, withinLast)))
                     || (remote && j.WorkArrangement == WorkArrangement.Remote);
+    }
+
+    /// <summary>
+    /// Finds where a typed city is from our own data: the average coordinates of matching duty
+    /// locations. With no state given, the state with the most postings wins. Null when the
+    /// search isn't a city, the radius is 0 (exact city), or we have no coordinates for it.
+    /// </summary>
+    private async Task<GeoArea?> ResolveAreaAsync(LocationQuery? loc, int? radius, CancellationToken cancellationToken)
+    {
+        if (loc?.City is null) return null;
+        var miles = radius is { } chosen && RadiusChoices.Contains(chosen) ? chosen : DefaultRadiusMiles;
+        if (miles == 0) return null;
+
+        var city = Escape(loc.City);
+        var rows = db.JobLocations.AsNoTracking().Where(l => EF.Functions.ILike(l.City, city));
+        if ((loc.State ?? loc.Region) is { } within)
+        {
+            var place = Escape(within);
+            rows = rows.Where(l => EF.Functions.ILike(l.State, place) || EF.Functions.ILike(l.Country, place));
+        }
+
+        var best = await rows
+            .GroupBy(l => new { l.State, l.Country })
+            .Select(g => new
+            {
+                g.Key.State, g.Key.Country, Count = g.Count(), City = g.Min(l => l.City),
+                Latitude = g.Average(l => l.Latitude), Longitude = g.Average(l => l.Longitude)
+            })
+            .OrderByDescending(g => g.Count)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (best is null) return null;
+
+        var region = best.Country is "" or "United States" && best.State != "" ? best.State : best.Country;
+        return new GeoArea(best.Latitude, best.Longitude, miles, $"{best.City}, {region}");
+    }
+
+    /// <summary>Nearest in-radius distance for each job on the page (one small query, math in C#).</summary>
+    private async Task<List<JobListItem>> WithDistancesAsync(List<JobListItem> items, GeoArea area, CancellationToken cancellationToken)
+    {
+        var ids = items.Select(i => i.Id).ToList();
+        var inBox = area.InBox();
+        var near = await db.JobLocations.AsNoTracking()
+            .Where(l => ids.Contains(l.JobId))
+            .Where(inBox)
+            .Select(l => new { l.JobId, l.Latitude, l.Longitude })
+            .ToListAsync(cancellationToken);
+        var nearest = near
+            .GroupBy(l => l.JobId)
+            .ToDictionary(g => g.Key, g => g.Min(l => Geo.Miles(area.Latitude, area.Longitude, l.Latitude, l.Longitude)));
+        return items.Select(i => nearest.TryGetValue(i.Id, out var miles) && miles <= area.Miles
+            ? i with { DistanceMiles = Math.Round(miles, 1) }
+            : i).ToList();
+    }
+
+    /// <summary>A resolved place and radius, with SQL-translatable pieces of the distance test.</summary>
+    private sealed record GeoArea(double Latitude, double Longitude, int Miles, string Place)
+    {
+        /// <summary>The central angle (radians) that spans the radius: miles ÷ Earth radius.</summary>
+        public double MaxAngle => Miles / Geo.EarthRadiusMiles;
+
+        public Expression<Func<JobLocation, bool>> InBox()
+        {
+            var (minLat, maxLat, minLon, maxLon) = Geo.Box(Latitude, Longitude, Miles);
+            return l => l.Latitude >= minLat && l.Latitude <= maxLat && l.Longitude >= minLon && l.Longitude <= maxLon;
+        }
+
+        /// <summary>
+        /// Central angle (radians) from the place to a location: 2·asin(√(haversine)). Written with
+        /// Math.* so Npgsql translates it to SQL. Miles = angle × Earth radius.
+        /// </summary>
+        public Expression<Func<JobLocation, double?>> Angle()
+        {
+            const double toRadians = Math.PI / 180;
+            var lat = Geo.Radians(Latitude);
+            var lon = Geo.Radians(Longitude);
+            var cosLat = Math.Cos(lat);
+            return l => 2 * Math.Asin(Math.Sqrt(
+                Math.Pow(Math.Sin((l.Latitude * toRadians - lat) / 2), 2)
+                + cosLat * Math.Cos(l.Latitude * toRadians) * Math.Pow(Math.Sin((l.Longitude * toRadians - lon) / 2), 2)));
+        }
     }
 
     /// <summary>Escapes the user's ILIKE wildcards (backslash is Postgres's default escape).</summary>
     private static string Escape(string value) =>
         value.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_");
 
-    private static IQueryable<Job> Sort(IQueryable<Job> q, JobSearchRequest r)
+    private static IQueryable<Job> Sort(IQueryable<Job> q, JobSearchRequest r, GeoArea? area)
     {
         var hasText = !string.IsNullOrWhiteSpace(r.Q);
         var sort = (r.Sort ?? (hasText ? "relevance" : "newest")).ToLowerInvariant();
@@ -300,6 +412,13 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
                     .ThenByDescending(j => j.OpenDate);
             case "closing":
                 return q.OrderBy(j => j.CloseDate).ThenBy(j => j.Id);
+            case "nearest" when area is not null:
+                // Remote-only matches have no in-radius location; Postgres sorts their NULL last.
+                var inBox = area.InBox();
+                var angle = area.Angle();
+                var maxAngle = area.MaxAngle;
+                return q.OrderBy(j => j.GeoLocations.AsQueryable().Where(inBox).Select(angle).Where(a => a <= maxAngle).Min())
+                    .ThenByDescending(j => j.OpenDate).ThenBy(j => j.Id);
             case "salary":
                 return q.OrderByDescending(j => j.SalaryMax).ThenBy(j => j.Id);
             default:

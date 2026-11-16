@@ -61,7 +61,11 @@ export class App {
     const base: Params = onSearch ? { ...this.query() } : {};
     delete base['sort'];
     delete base['page'];
-    if (location.trim() !== (base['location'] ?? '')) delete base['includeRemote'];
+    if (location.trim() !== (base['location'] ?? '')) {
+      // A new place starts from the defaults (remote included, 25 mi).
+      delete base['includeRemote'];
+      delete base['radius'];
+    }
     this.router.navigate(['/'], {
       queryParams: { ...base, q: q.trim() || null, location: location.trim() || null },
     });

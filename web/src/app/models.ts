@@ -31,6 +31,8 @@ export interface JobListItem {
   promotionPotential: number | null;
   firstSeen: string;
   url: string;
+  /** Miles to the nearest in-radius duty location (radius searches only). */
+  distanceMiles?: number | null;
   snippet: string;
 }
 
@@ -40,7 +42,13 @@ export interface JobSearchResponse {
   pageSize: number;
   items: JobListItem[];
   facets: Record<string, FacetValue[]>;
+  /** How the location search was applied: miles around a city, exact name, or a state. */
+  location?: { mode: 'radius' | 'text' | 'state'; place: string | null; radiusMiles: number | null } | null;
 }
+
+/** "Within" choices for city searches; 0 is the exact city. Matches the API's default of 25. */
+export const RADIUS_OPTIONS = [0, 10, 25, 50, 100];
+export const DEFAULT_RADIUS = 25;
 
 export interface JobDetail extends JobListItem {
   announcementNumber: string;
