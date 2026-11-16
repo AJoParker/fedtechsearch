@@ -39,7 +39,7 @@ public sealed class NullLlmClassifier : ILlmClassifier
 public sealed class JobEnricher
 {
     /// <summary>Bump when extraction logic changes so stored jobs get re-enriched.</summary>
-    public const int AlgorithmVersion = 2;
+    public const int AlgorithmVersion = 10;
 
     private readonly CompiledTaxonomy _taxonomy;
     private readonly RuleExtractor _rules;

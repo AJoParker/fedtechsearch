@@ -117,6 +117,9 @@ public sealed class IngestService
             if (needsEnrichment)
             {
                 var fields = await _enricher.EnrichAsync(raw, cancellationToken);
+                // Never shown, but worth a look: the parser found something the verbatim check refused.
+                foreach (var item in fields.QualificationRejected)
+                    _logger.LogWarning("Qualification item rejected (not verbatim) for job {JobId}: {Item}", raw.Id, item);
                 ApplyEnrichment(job, fields);
                 job.ContentHash = hash;
                 job.EnrichmentVersion = _enricher.EnrichmentVersion;
@@ -182,6 +185,7 @@ public sealed class IngestService
         job.DirectHire = f.DirectHire;
         job.OpenToPublic = f.OpenToPublic;
         job.MayCloseEarly = f.MayCloseEarly;
+        job.QualificationInfo = f.Qualifications;
     }
 
     public static string BuildSearchText(Job job) => string.Join(" \n",
@@ -196,7 +200,7 @@ public sealed class IngestService
     public static string ContentHash(RawJob raw)
     {
         var material = string.Join("\u001f",
-            raw.Title, raw.Summary, string.Join("\u001e", raw.Duties), raw.Qualifications, raw.Requirements, raw.HowToApply,
+            raw.Title, raw.Summary, string.Join("\u001e", raw.Duties), raw.Qualifications, raw.Requirements, raw.HowToApply, raw.Education,
             raw.PayPlan, raw.LowGrade, raw.HighGrade, raw.SalaryMin, raw.SalaryMax, raw.SalaryInterval,
             raw.TeleworkEligible, raw.RemoteIndicator, raw.SecurityClearance, raw.LocationDisplay,
             string.Join("\u001e", raw.HiringPaths), raw.WhoMayApply, string.Join("\u001e", raw.Series));

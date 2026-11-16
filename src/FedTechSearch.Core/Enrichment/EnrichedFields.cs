@@ -163,6 +163,12 @@ public sealed class EnrichedFields
     public bool DirectHire { get; set; }
     public bool OpenToPublic { get; set; }
 
+    /// <summary>Readable qualifications: every string a verbatim span of the source text.</summary>
+    public Qualifications.QualificationInfo Qualifications { get; set; } = new();
+
+    /// <summary>Items the parser found but the verbatim check rejected; logged at ingest for tuning.</summary>
+    public List<string> QualificationRejected { get; set; } = [];
+
     /// <summary>The posting says it may close before its closing date (e.g. "first 100 applicants").</summary>
     public bool MayCloseEarly { get; set; }
 

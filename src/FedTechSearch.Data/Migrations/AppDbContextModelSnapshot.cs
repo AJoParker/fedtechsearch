@@ -121,6 +121,9 @@ namespace FedTechSearch.Data.Migrations
                     b.Property<int?>("PromotionPotential")
                         .HasColumnType("integer");
 
+                    b.Property<string>("QualificationInfo")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("Qualifications")
                         .IsRequired()
                         .HasColumnType("text");

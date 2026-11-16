@@ -40,6 +40,9 @@ public sealed class Job
     public List<string> Duties { get; set; } = [];
     public string Qualifications { get; set; } = "";
 
+    /// <summary>Structured, verbatim view of <see cref="Qualifications"/> (jsonb). The original text is kept unchanged.</summary>
+    public Qualifications.QualificationInfo? QualificationInfo { get; set; }
+
     // Derived search fields
     public string WorkingTitle { get; set; } = "";
     public string WorkingTitleSource { get; set; } = "";

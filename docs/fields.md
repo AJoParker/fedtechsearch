@@ -27,6 +27,37 @@ optional LLM pass (see the README).
 | `promotionPotential` | 1 to 15 | `PromotionPotential`; values outside 1-15 (e.g. "00") are dropped. |
 | `openToPublic` | true/false | HiringPath includes `public`. False means status candidates only (current or former federal employees, and similar). |
 
+## Readable qualifications (`qualificationInfo`)
+
+The qualifications text (`QualificationSummary`, about 510 words on average) is mostly OPM
+boilerplate. `QualificationParser` (Core) turns it into a structured view stored as jsonb:
+`parsed`, `whoMayApply`, `blocks[]` (one per grade: `grade`, `equivalentGrade`,
+`experienceLabel`, `experienceDuties[]`, `education { requirement, fields[], alternatives[] }`),
+`standardCompetencies[]` and `notes[]`. The original `qualifications` text is never changed.
+
+**No paraphrasing.** Qualifications decide whether HR screens someone out, so every duty, field of
+study and note must be a verbatim span of the source. The only edits allowed are trimming
+whitespace, leading filler ("which includes", "Examples of qualifying experience…:"), trailing
+punctuation and connectives, and capitalizing the first letter. `Verbatim.Contains` checks every
+item against the text it came from (case-insensitive, whitespace collapsed); items that fail are
+dropped and logged at ingest. The LLM is never used here.
+
+- **Grades:** one block per grade heading ("To qualify at the GS-14 level", "For GS-12:"), else the
+  grade in a section title ("GS-2210-11") or the posting's own grade.
+- **Duties:** the list after the first specialized-experience intro, split on numbering, sentences
+  (after a colon) and semicolons. A comma list is split only when every piece is a whole "-ing"
+  phrase of two or more words, so "Designing, developing, and maintaining X" stays one duty.
+- **Education:** the "OR Education:" path, or `Details.Education` when it holds a degree and a list
+  of fields.
+- **Competencies:** the four standard 2210 definitions, matched by heading or by two distinctive
+  phrases, are shown as chips and excluded from duty extraction.
+- **SES/ST postings:** numbered Technical Qualifications ("TQ 1: Title: text") are kept verbatim,
+  and Executive Core Qualifications are matched by name or phrase and shown as chips.
+- **Parsed** is true when at least one grade block has duties, or the posting has TQs; otherwise the UI shows the original
+  text broken into paragraphs at section markers. About half of live postings parse.
+
+Patterns live in `QualificationPatterns`; tune them there, not in the parser.
+
 ## Duty locations and radius search
 
 Each job's `PositionLocation` entries that carry real coordinates are stored in `job_locations`

@@ -1,4 +1,7 @@
+using System.Text.Json;
 using FedTechSearch.Core.Model;
+using FedTechSearch.Core.Qualifications;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -9,6 +12,8 @@ namespace FedTechSearch.Data;
 
 public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<JobLocation> JobLocations => Set<JobLocation>();
     public DbSet<TagFeedback> TagFeedback => Set<TagFeedback>();
@@ -33,6 +38,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         job.HasIndex(j => j.HiringPaths).HasMethod("gin");
         job.HasIndex(j => j.Department);
         job.HasIndex(j => j.PromotionPotential);
+        // Stored as jsonb; read back whole, so a plain JSON conversion is enough.
+        job.Property(j => j.QualificationInfo)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => v == null ? null : JsonSerializer.Serialize(v, JsonOptions),
+                v => v == null ? null : JsonSerializer.Deserialize<QualificationInfo>(v, JsonOptions),
+                new ValueComparer<QualificationInfo?>(
+                    (a, b) => JsonSerializer.Serialize(a, JsonOptions) == JsonSerializer.Serialize(b, JsonOptions),
+                    v => JsonSerializer.Serialize(v, JsonOptions).GetHashCode(),
+                    v => v == null ? null : JsonSerializer.Deserialize<QualificationInfo>(JsonSerializer.Serialize(v, JsonOptions), JsonOptions)));
+
         job.HasMany(j => j.GeoLocations).WithOne().HasForeignKey(l => l.JobId).OnDelete(DeleteBehavior.Cascade);
 
         var location = modelBuilder.Entity<JobLocation>();

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\fixtures\*.json" LinkBase="fixtures" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\fixtures\qualifications\*.txt" LinkBase="fixtures\qualifications" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

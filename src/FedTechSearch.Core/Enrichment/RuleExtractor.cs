@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using FedTechSearch.Core.Qualifications;
 using FedTechSearch.Core.Taxonomy;
 
 namespace FedTechSearch.Core.Enrichment;
@@ -95,6 +96,10 @@ public sealed class RuleExtractor
                                || MayCloseEarlyText.IsMatch(job.HowToApply);
         fields.OpenToPublic = job.HiringPaths.Any(p => p.Equals("public", StringComparison.OrdinalIgnoreCase))
                               || (job.WhoMayApply?.Contains("public", StringComparison.OrdinalIgnoreCase) ?? false);
+
+        var qualifications = QualificationParser.Parse(job.Qualifications, job.Education, job.WhoMayApply, job.PayPlan, job.LowGrade, job.HighGrade);
+        fields.Qualifications = qualifications.Info;
+        fields.QualificationRejected = qualifications.Rejected.ToList();
 
         (fields.WorkingTitle, fields.WorkingTitleSource) = ComputeWorkingTitle(job, fields);
         return fields;

@@ -91,6 +91,7 @@ public static partial class UsaJobsMapper
             // "00" and out-of-range values show up for non-GS pay plans.
             PromotionPotential = Int(details, "PromotionPotential") is >= 1 and <= 15 and var pp ? pp : null,
             HowToApply = Clean(Str(details, "HowToApply")),
+            Education = Clean(Str(details, "Education")),
         };
     }
 

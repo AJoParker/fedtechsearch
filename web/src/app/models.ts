@@ -46,6 +46,26 @@ export interface JobSearchResponse {
   location?: { mode: 'radius' | 'text' | 'state'; place: string | null; radiusMiles: number | null } | null;
 }
 
+/** Readable qualifications. Every string is a verbatim span of the posting's own text. */
+export interface QualificationInfo {
+  parsed: boolean;
+  whoMayApply: string | null;
+  blocks: QualificationBlock[];
+  standardCompetencies: string[];
+  notes: string[];
+  /** SES/ST postings. */
+  technicalQualifications?: { label: string; title: string | null; text: string }[];
+  executiveCoreQualifications?: string[];
+}
+
+export interface QualificationBlock {
+  grade: string | null;
+  equivalentGrade: string | null;
+  experienceLabel: string | null;
+  experienceDuties: string[];
+  education: { requirement: string; fields: string[]; alternatives: string[] } | null;
+}
+
 export type TagField = 'roleFamily' | 'tech' | 'workingTitle' | 'seniority' | 'clearance' | 'workArrangement';
 
 export interface TagFeedbackInput {
@@ -93,6 +113,7 @@ export interface JobDetail extends JobListItem {
   summary: string;
   duties: string[];
   qualifications: string;
+  qualificationInfo?: QualificationInfo | null;
   workingTitleSource: string;
   roleConfidence: number;
 }

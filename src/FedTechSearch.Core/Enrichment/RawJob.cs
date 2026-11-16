@@ -48,6 +48,9 @@ public sealed class RawJob
     public int? PromotionPotential { get; set; }
     public string HowToApply { get; set; } = "";
 
+    /// <summary>Details.Education: sometimes holds the education path when the qualifications text doesn't.</summary>
+    public string Education { get; set; } = "";
+
     /// <summary>The text the role and tech rules read: title, summary, duties and qualifications.</summary>
     public string AnalysisText() =>
         string.Join("\n", new[] { Title, Summary }.Concat(Duties).Append(Qualifications)
