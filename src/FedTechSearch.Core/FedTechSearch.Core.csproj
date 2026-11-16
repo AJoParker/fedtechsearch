@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <EmbeddedResource Include="Taxonomy\taxonomy.json" LogicalName="taxonomy.json" />
+  </ItemGroup>
+</Project>

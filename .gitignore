@@ -1,0 +1,10 @@
+bin/
+obj/
+*.user
+.vs/
+.idea/
+web/node_modules/
+web/dist/
+web/.angular/
+.env
+.gitnexus

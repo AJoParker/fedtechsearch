@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\FedTechSearch.Data\FedTechSearch.Data.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FedTechSearch.Core/FedTechSearch.Core.csproj" />
+    <Project Path="src/FedTechSearch.Data/FedTechSearch.Data.csproj" />
+    <Project Path="src/FedTechSearch.Ingest/FedTechSearch.Ingest.csproj" />
+    <Project Path="src/FedTechSearch.Api/FedTechSearch.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FedTechSearch.Core.Tests/FedTechSearch.Core.Tests.csproj" />
+    <Project Path="tests/FedTechSearch.Data.Tests/FedTechSearch.Data.Tests.csproj" />
+  </Folder>
+</Solution>

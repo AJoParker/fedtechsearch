@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: fedtech
+      POSTGRES_USER: fedtech
+      POSTGRES_PASSWORD: fedtech
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fedtech"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build: { context: ., dockerfile: src/FedTechSearch.Api/Dockerfile }
+    environment:
+      ConnectionStrings__Jobs: Host=db;Database=fedtech;Username=fedtech;Password=fedtech
+    ports: ["5080:8080"]
+    depends_on: { db: { condition: service_healthy } }
+
+  ingest:
+    build: { context: ., dockerfile: src/FedTechSearch.Ingest/Dockerfile }
+    environment:
+      ConnectionStrings__Jobs: Host=db;Database=fedtech;Username=fedtech;Password=fedtech
+      UsaJobs__ApiKey: ${USAJOBS_API_KEY:-}
+      UsaJobs__UserAgentEmail: ${USAJOBS_EMAIL:-}
+      Llm__Mode: ${LLM_MODE:-Off}
+      Llm__BaseUrl: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+      Llm__Model: ${LLM_MODEL:-llama3.1:8b}
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    depends_on: { db: { condition: service_healthy } }
+
+  web:
+    build: { context: ., dockerfile: web/Dockerfile }
+    ports: ["${WEB_PORT:-8080}:80"]
+    depends_on: [api]
+
+volumes:
+  pgdata:

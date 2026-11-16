@@ -1,0 +1,15 @@
+# Store text files with LF endings. Tools that write CRLF (e.g. `gitnexus analyze`)
+# get normalized on `git add`, so the pre-commit whitespace check stays clean.
+* text=auto eol=lf
+
+# Binary files: never convert.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary
+*.zip binary

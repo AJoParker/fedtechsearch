@@ -1,0 +1,724 @@
+{
+  "LanguageCode": "EN",
+  "SearchParameters": {},
+  "SearchResult": {
+    "SearchResultCount": 7,
+    "SearchResultCountAll": 7,
+    "SearchResultItems": [
+      {
+        "MatchedObjectId": "812345600",
+        "MatchedObjectDescriptor": {
+          "PositionID": "VA-26-12345-APPSW",
+          "PositionTitle": "IT Specialist (APPSW)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345600",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345600"
+          ],
+          "PositionLocationDisplay": "Washington, District of Columbia",
+          "PositionLocation": [
+            {
+              "LocationName": "Washington, District of Columbia",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "District of Columbia",
+              "CityName": "Washington, District of Columbia",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Veterans Affairs, Office of Information and Technology",
+          "DepartmentName": "Department of Veterans Affairs",
+          "JobCategory": [
+            {
+              "Name": "Information Technology Management",
+              "Code": "2210"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Specialized experience includes developing applications in the .NET framework and object-oriented programming languages.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "104604.0",
+              "MaximumRange": "161753.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "This position serves as a Full Stack Software Developer on the VA.gov modernization team, building veteran-facing benefits applications.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "12",
+              "HighGrade": "13",
+              "PromotionPotential": "13",
+              "HiringPath": [
+                "public",
+                "vet"
+              ],
+              "MajorDuties": [
+                "Designs, develops and maintains web applications using C#, ASP.NET Core and Angular with TypeScript.",
+                "Writes RESTful APIs and Entity Framework data access layers against SQL Server.",
+                "Participates in code reviews and writes unit tests; uses Git and Azure DevOps pipelines for CI/CD.",
+                "Works on an Agile Scrum team and ensures Section 508 compliance."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Not Required",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345601",
+        "MatchedObjectDescriptor": {
+          "PositionID": "DISA-26-0042",
+          "PositionTitle": "Information Technology Specialist (SYSADMIN/NETWORK)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345601",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345601"
+          ],
+          "PositionLocationDisplay": "Fort Meade, Maryland",
+          "PositionLocation": [
+            {
+              "LocationName": "Fort Meade, Maryland",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Maryland",
+              "CityName": "Fort Meade, Maryland",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Defense Information Systems Agency",
+          "DepartmentName": "Department of Defense",
+          "JobCategory": [
+            {
+              "Name": "Information Technology Management",
+              "Code": "2210"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Experience automating cloud infrastructure, container orchestration, and DevSecOps practices.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "117962.0",
+              "MaximumRange": "153354.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Join the hosting and compute team running containerized mission workloads in the cloud.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "13",
+              "HighGrade": "13",
+              "PromotionPotential": "13",
+              "HiringPath": [
+                "fed-competitive",
+                "vet"
+              ],
+              "MajorDuties": [
+                "Builds and operates Kubernetes clusters on AWS GovCloud and OpenShift using Terraform and Helm charts.",
+                "Maintains CI/CD pipelines in GitLab and implements infrastructure as code for repeatable deployments.",
+                "Administers Red Hat Enterprise Linux servers and applies STIGs.",
+                "Monitors platform health with Prometheus and Grafana and supports site reliability practices."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": false,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Secret",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ],
+              "HowToApply": "Applicants must meet all qualification and eligibility requirements by the cut-off/closing date of the announcement.",
+              "TravelCode": "2"
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345602",
+        "MatchedObjectDescriptor": {
+          "PositionID": "DHS-CISA-26-777",
+          "PositionTitle": "IT Cybersecurity Specialist (INFOSEC)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345602",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345602"
+          ],
+          "PositionLocationDisplay": "Arlington, Virginia",
+          "PositionLocation": [
+            {
+              "LocationName": "Arlington, Virginia",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Virginia",
+              "CityName": "Arlington, Virginia",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Cybersecurity and Infrastructure Security Agency",
+          "DepartmentName": "Department of Homeland Security",
+          "JobCategory": [
+            {
+              "Name": "Information Technology Management",
+              "Code": "2210"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Experience applying cybersecurity principles, security controls, and vulnerability analysis.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "139395.0",
+              "MaximumRange": "214899.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "The official title of this position is Information Technology Cybersecurity Specialist (INFOSEC) GS-2210-13/14.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "13",
+              "HighGrade": "14",
+              "PromotionPotential": "14",
+              "HiringPath": [
+                "fed-internal-search"
+              ],
+              "MajorDuties": [
+                "Leads incident response and threat hunting activities across federal networks.",
+                "Performs security assessments under the Risk Management Framework (RMF) and NIST SP 800-53 and supports Authorization to Operate (ATO) packages in eMASS.",
+                "Analyzes SIEM data in Splunk and coordinates vulnerability management with Tenable."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": false,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Top Secret/SCI",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345603",
+        "MatchedObjectDescriptor": {
+          "PositionID": "CMS-26-1560-DS",
+          "PositionTitle": "Data Scientist",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345603",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345603"
+          ],
+          "PositionLocationDisplay": "Anywhere in the U.S. (remote job)",
+          "PositionLocation": [
+            {
+              "LocationName": "Anywhere in the U.S. (remote job), ",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "",
+              "CityName": "Anywhere in the U.S. (remote job), ",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Centers for Medicare & Medicaid Services",
+          "DepartmentName": "Department of Health and Human Services",
+          "JobCategory": [
+            {
+              "Name": "Data Science Series",
+              "Code": "1560"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Experience with data science methods, deep learning, and Apache Spark.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "117962.0",
+              "MaximumRange": "195200.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Serve as a Senior Data Scientist building predictive models for program integrity.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "13",
+              "HighGrade": "15",
+              "PromotionPotential": "15",
+              "HiringPath": [
+                "public"
+              ],
+              "MajorDuties": [
+                "Develops machine learning and statistical models in Python and R on Databricks.",
+                "Applies natural language processing and large language models to claims narratives.",
+                "Builds dashboards in Tableau to communicate findings."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": true,
+              "SecurityClearance": "Public Trust - Background Investigation",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345604",
+        "MatchedObjectDescriptor": {
+          "PositionID": "SSA-26-HD-09",
+          "PositionTitle": "IT Specialist (CUSTSPT)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345604",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345604"
+          ],
+          "PositionLocationDisplay": "Multiple Locations",
+          "PositionLocation": [
+            {
+              "LocationName": "Baltimore, Maryland",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Maryland",
+              "CityName": "Baltimore, Maryland",
+              "Longitude": 0,
+              "Latitude": 0
+            },
+            {
+              "LocationName": "Woodlawn, Maryland",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Maryland",
+              "CityName": "Woodlawn, Maryland",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Social Security Administration",
+          "DepartmentName": "Social Security Administration",
+          "JobCategory": [
+            {
+              "Name": "Information Technology Management",
+              "Code": "2210"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Experience providing customer support for computer hardware and software.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "55924.0",
+              "MaximumRange": "89000.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Provides help desk and desktop support to end users in field offices.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "7",
+              "HighGrade": "9",
+              "PromotionPotential": "9",
+              "HiringPath": [
+                "public"
+              ],
+              "MajorDuties": [
+                "Resolves trouble tickets in ServiceNow and troubleshoots hardware, software and peripherals.",
+                "Images laptops, manages accounts in Active Directory and supports Microsoft 365.",
+                "Provides technical assistance to end users by phone and in person."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": false,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Not Required",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ],
+              "HowToApply": "Submit your application by 11:59 PM ET on the closing date. Initial consideration for this announcement is limited to the first 100 applicants; the announcement may close early.",
+              "TravelCode": "0"
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345605",
+        "MatchedObjectDescriptor": {
+          "PositionID": "DOI-26-OCIO-15",
+          "PositionTitle": "Supervisory IT Specialist (PLCYPLN)",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345605",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345605"
+          ],
+          "PositionLocationDisplay": "Washington, District of Columbia",
+          "PositionLocation": [
+            {
+              "LocationName": "Washington, District of Columbia",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "District of Columbia",
+              "CityName": "Washington, District of Columbia",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "Office of the Chief Information Officer",
+          "DepartmentName": "Department of the Interior",
+          "JobCategory": [
+            {
+              "Name": "Information Technology Management",
+              "Code": "2210"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "GS"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Experience leading strategic planning for enterprise IT programs.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "172500.0",
+              "MaximumRange": "195200.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Lead the IT governance and capital planning division. This is a Direct Hire position.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "15",
+              "HighGrade": "15",
+              "PromotionPotential": "15",
+              "HiringPath": [
+                "public",
+                "fed-competitive"
+              ],
+              "MajorDuties": [
+                "Directs IT policy development, IT governance and Capital Planning and Investment Control (CPIC) processes.",
+                "Ensures FITARA compliance and oversees the IT budget and IT investments portfolio.",
+                "Supervises a staff of 12 IT specialists and program analysts."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Public Trust - Moderate Risk",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      },
+      {
+        "MatchedObjectId": "812345606",
+        "MatchedObjectDescriptor": {
+          "PositionID": "NIST-26-1550-DB",
+          "PositionTitle": "Computer Scientist",
+          "PositionURI": "https://www.usajobs.gov:443/job/812345606",
+          "ApplyURI": [
+            "https://www.usajobs.gov:443/job/812345606"
+          ],
+          "PositionLocationDisplay": "Gaithersburg, Maryland",
+          "PositionLocation": [
+            {
+              "LocationName": "Gaithersburg, Maryland",
+              "CountryCode": "United States",
+              "CountrySubDivisionCode": "Maryland",
+              "CityName": "Gaithersburg, Maryland",
+              "Longitude": 0,
+              "Latitude": 0
+            }
+          ],
+          "OrganizationName": "National Institute of Standards and Technology",
+          "DepartmentName": "Department of Commerce",
+          "JobCategory": [
+            {
+              "Name": "Computer Science",
+              "Code": "1550"
+            }
+          ],
+          "JobGrade": [
+            {
+              "Code": "ZP"
+            }
+          ],
+          "PositionSchedule": [
+            {
+              "Name": "Full-time",
+              "Code": "1"
+            }
+          ],
+          "PositionOfferingType": [
+            {
+              "Name": "Permanent",
+              "Code": "15317"
+            }
+          ],
+          "QualificationSummary": "Ph.D. or equivalent experience in computer science with publications in machine learning.",
+          "PositionRemuneration": [
+            {
+              "MinimumRange": "104604.0",
+              "MaximumRange": "195200.0",
+              "RateIntervalCode": "PA",
+              "Description": "Per Year"
+            }
+          ],
+          "PositionStartDate": "2026-11-10T00:00:00.0000",
+          "PositionEndDate": "2026-11-24T23:59:59.9970",
+          "PublicationStartDate": "2026-11-10T00:00:00.0000",
+          "ApplicationCloseDate": "2026-11-24T23:59:59.9970",
+          "PositionFormattedDescription": [
+            {
+              "Label": "Dynamic Teaser",
+              "LabelDescription": "Hit highlighting",
+              "Content": ""
+            }
+          ],
+          "UserArea": {
+            "Details": {
+              "JobSummary": "Research position in trustworthy AI evaluation. Must react to changing research priorities and coordinate with the rest of the lab during the Spring semester intern cycle.",
+              "WhoMayApply": {
+                "Name": "",
+                "Code": ""
+              },
+              "LowGrade": "3",
+              "HighGrade": "4",
+              "PromotionPotential": "4",
+              "HiringPath": [
+                "public"
+              ],
+              "MajorDuties": [
+                "Conducts research on evaluating large language models and generative AI systems using PyTorch.",
+                "Develops evaluation tooling in Python and Golang and publishes results.",
+                "Works with computer vision benchmarks and deep learning models."
+              ],
+              "Education": "",
+              "Requirements": "U.S. Citizenship Required",
+              "Evaluations": "",
+              "TeleworkEligible": true,
+              "RemoteIndicator": false,
+              "SecurityClearance": "Not Required",
+              "SubAgencyName": "",
+              "KeyRequirements": [
+                "Must be a U.S. Citizen"
+              ]
+            },
+            "IsRadialSearch": false
+          }
+        },
+        "RelevanceRank": 0
+      }
+    ],
+    "UserArea": {
+      "NumberOfPages": "1",
+      "IsRadialSearch": false
+    }
+  }
+}
