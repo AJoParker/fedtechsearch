@@ -340,3 +340,21 @@ dialog.hidden-posts .dialog-head h2 { font-size: 18px; }
 
 /* A single paragraph of duties, shown as a card instead of one long bullet */
 .duties-card { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); line-height: 1.6; }
+
+/* Email alerts */
+.alert-btn { gap: 6px; }
+.alert-form { margin: 0; border: 0; background: none; }
+.alert-form label { gap: 4px; }
+.header-link { color: var(--header-ink); text-decoration: none; font-weight: 600; padding: 6px 10px; border-radius: 8px; }
+.header-link:hover { background: rgb(245 245 245 / .1); }
+.alerts-page { display: flex; flex-direction: column; gap: 14px; }
+.alert-card { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; }
+.alert-card.paused { opacity: .75; }
+.alert-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.alert-name { flex: 1 1 240px; }
+.alert-name input, .alert-row select {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background-color: var(--field-bg); color: var(--ink); font: inherit;
+}
+.alert-row select { width: auto; }
+.link.danger { color: var(--danger); }
+.danger-zone { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }

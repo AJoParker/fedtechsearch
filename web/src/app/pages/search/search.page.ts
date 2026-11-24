@@ -4,6 +4,7 @@ import { HttpParams } from '@angular/common/http';
 import { ActivatedRoute, ParamMap, Params, Router, RouterLink } from '@angular/router';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { combineLatest, filter, Subscription } from 'rxjs';
+import { AlertFrequency, AlertsService } from '../../alerts.service';
 import { HiddenJobsStore } from '../../hidden-jobs.store';
 import { JobDetailComponent } from '../../job-detail';
 import { grade, seniorityLabel, usajobsLink } from '../../job-format';
@@ -45,6 +46,10 @@ export class SearchPage {
   private readonly filtersDialog = viewChild.required<ElementRef<HTMLDialogElement>>('filtersDialog');
   private readonly hiddenDialog = viewChild.required<ElementRef<HTMLDialogElement>>('hiddenDialog');
   protected readonly hiddenJobs = inject(HiddenJobsStore);
+  private readonly alertsApi = inject(AlertsService);
+  private readonly alertDialog = viewChild.required<ElementRef<HTMLDialogElement>>('alertDialog');
+  protected readonly alertState = signal<'idle' | 'sending' | 'sent'>('idle');
+  protected readonly alertError = signal('');
   private readonly filtersPane = viewChild.required<ElementRef<HTMLElement>>('filtersPane');
   private readonly filtersNav = viewChild.required<ElementRef<HTMLElement>>('filtersNav');
   /** While the dialog is open, the first change adds a history entry and later ones replace it. */
@@ -358,6 +363,50 @@ export class SearchPage {
   }
 
   // ---- hidden posts ------------------------------------------------------------------
+
+  // ---- email alerts --------------------------------------------------------------------
+
+  /** A short default name for an alert: "Kubernetes · Houston, TX · Remote". */
+  protected readonly describeSearch = computed(() => {
+    const parts: string[] = [];
+    if (this.q()) parts.push(this.q());
+    if (this.location()) parts.push(this.location());
+    for (const key of ['roleFamily', 'tech', 'work', 'seniority', 'clearance', 'agency'])
+      for (const v of this.filters()[key] ?? []) parts.push(v);
+    const name = parts.slice(0, 4).join(' · ') || 'All federal tech jobs';
+    return name.length > 80 ? name.slice(0, 77) + '...' : name;
+  });
+
+  protected openAlert(): void {
+    this.alertState.set('idle');
+    this.alertError.set('');
+    this.alertDialog().nativeElement.showModal();
+  }
+
+  protected closeAlert(): void {
+    this.alertDialog().nativeElement.close();
+  }
+
+  protected onAlertDialogClick(event: MouseEvent): void {
+    if (event.target === this.alertDialog().nativeElement) this.closeAlert();
+  }
+
+  /** Saves the current search (as on screen: no page, sort or hidden posts) and sends the confirm email. */
+  protected submitAlert(event: Event, email: string, name: string, frequency: string): void {
+    event.preventDefault();
+    const query = this.buildParams().delete('page').delete('sort').toString();
+    this.alertState.set('sending');
+    this.alertError.set('');
+    this.alertsApi.subscribe(email.trim(), query, name.trim(), frequency as AlertFrequency).subscribe({
+      next: () => this.alertState.set('sent'),
+      error: (e) => {
+        this.alertState.set('idle');
+        this.alertError.set(
+          e.status === 429 ? 'Too many requests from your network. Try again later.' : (e.error?.error ?? 'Could not save the alert. Please try again.'),
+        );
+      },
+    });
+  }
 
   protected openHidden(): void {
     this.hiddenDialog().nativeElement.showModal();

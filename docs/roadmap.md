@@ -178,6 +178,12 @@ Turns real users into a tuning loop for `taxonomy.json`.
 
 ## Phase 4: Saved searches with email alerts
 
+> **Done** (2026-11-24). Digests go out at 7:00 AM Eastern (daily) and Monday 7:00 AM (weekly) from an
+> `AlertWorker` that checks every 15 minutes, rather than right after each ingest. Each saved search
+> is confirmed separately (`saved_searches.ConfirmedAt`), so nobody can attach searches to another
+> address. Both senders are built (SMTP for MailPit, SES v2 with raw MIME); SES is verified only once
+> a sending domain exists.
+
 The biggest reason for people to come back. Email-only, no passwords.
 
 **Data (migration):**

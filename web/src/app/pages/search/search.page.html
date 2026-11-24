@@ -5,6 +5,10 @@
       Filters
       @if (dialogFilterCount()) { <span class="count-badge">{{ dialogFilterCount() }}</span> }
     </button>
+    <button type="button" class="filters-btn alert-btn" (click)="openAlert()" aria-haspopup="dialog" aria-controls="alert-dialog">
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+      Email me new matches
+    </button>
     @if (location()) {
       <label class="opt remote">
         <input type="checkbox" [checked]="includeRemote()" (change)="setIncludeRemote($any($event.target).checked)" />
@@ -298,4 +302,49 @@
     <button type="button" class="link" (click)="unhideAll()" [disabled]="!hiddenJobs.hidden().length">Unhide all</button>
     <button type="button" class="primary" (click)="closeHidden()">Done</button>
   </footer>
+</dialog>
+
+<dialog #alertDialog id="alert-dialog" class="hidden-posts" aria-labelledby="alert-title" (click)="onAlertDialogClick($event)">
+  <header class="dialog-head">
+    <h2 id="alert-title">Email me new matches</h2>
+    <button type="button" class="icon-btn" (click)="closeAlert()" aria-label="Close">×</button>
+  </header>
+  @if (alertState() === 'sent') {
+    <div class="hidden-body">
+      <p class="tf-message" role="status">Check your inbox to confirm. Nothing is sent until you do.</p>
+      <p class="fine">The link works for 48 hours. Daily emails go out at 7 AM Eastern; weekly ones on Mondays.</p>
+    </div>
+    <footer class="dialog-foot">
+      <a routerLink="/alerts" (click)="closeAlert()">Manage alerts</a>
+      <button type="button" class="primary" (click)="closeAlert()">Done</button>
+    </footer>
+  } @else {
+    <form (submit)="submitAlert($event, alertEmail.value, alertName.value, alertFrequency.value)">
+      <div class="hidden-body tag-feedback alert-form">
+        <label>
+          <span>Email</span>
+          <input #alertEmail type="email" autocomplete="email" required maxlength="254" />
+        </label>
+        <label>
+          <span>Alert name</span>
+          <input #alertName type="text" maxlength="80" [value]="describeSearch()" />
+        </label>
+        <label>
+          <span>How often</span>
+          <select #alertFrequency>
+            <option value="Daily">Daily, at 7 AM Eastern</option>
+            <option value="Weekly">Weekly, on Monday mornings</option>
+          </select>
+        </label>
+        <p class="fine">You'll get new jobs matching this search, with your current filters. We only store your email to send these alerts. <a routerLink="/privacy" (click)="closeAlert()">Privacy</a></p>
+        @if (alertError()) { <p class="tf-error" role="alert">{{ alertError() }}</p> }
+      </div>
+      <footer class="dialog-foot">
+        <button type="button" class="link" (click)="closeAlert()">Cancel</button>
+        <button type="submit" class="primary" [disabled]="alertState() === 'sending'">
+          {{ alertState() === 'sending' ? 'Sending...' : 'Send confirmation' }}
+        </button>
+      </footer>
+    </form>
+  }
 </dialog>

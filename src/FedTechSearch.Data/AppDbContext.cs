@@ -17,6 +17,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<JobLocation> JobLocations => Set<JobLocation>();
     public DbSet<TagFeedback> TagFeedback => Set<TagFeedback>();
+    public DbSet<Subscriber> Subscribers => Set<Subscriber>();
+    public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>();
+    public DbSet<AuthToken> AuthTokens => Set<AuthToken>();
+    public DbSet<AlertDelivery> AlertDeliveries => Set<AlertDelivery>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -68,6 +72,33 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         feedback.HasOne<Job>().WithMany().HasForeignKey(f => f.JobId).OnDelete(DeleteBehavior.Cascade);
         feedback.HasIndex(f => new { f.Field, f.CurrentValue });
         feedback.HasIndex(f => f.CreatedAt);
+
+        var subscriber = modelBuilder.Entity<Subscriber>();
+        subscriber.ToTable("subscribers");
+        subscriber.Property(x => x.Id).ValueGeneratedNever(); // Guids are created in code
+        subscriber.Property(x => x.Email).HasMaxLength(254);
+        subscriber.HasIndex(x => x.Email).IsUnique();
+        subscriber.HasMany(x => x.Searches).WithOne().HasForeignKey(x => x.SubscriberId).OnDelete(DeleteBehavior.Cascade);
+
+        var search = modelBuilder.Entity<SavedSearch>();
+        search.ToTable("saved_searches");
+        search.Property(x => x.Id).ValueGeneratedNever();
+        search.Property(x => x.Name).HasMaxLength(80);
+        search.Property(x => x.QueryString).HasMaxLength(2000);
+        search.Property(x => x.Frequency).HasConversion<string>().HasMaxLength(16);
+
+        var token = modelBuilder.Entity<AuthToken>();
+        token.ToTable("auth_tokens");
+        token.Property(x => x.TokenHash).HasMaxLength(64);
+        token.Property(x => x.Purpose).HasConversion<string>().HasMaxLength(16);
+        token.HasIndex(x => x.TokenHash).IsUnique();
+        token.HasIndex(x => new { x.SubscriberId, x.Purpose, x.CreatedAt });
+        token.HasOne<Subscriber>().WithMany().HasForeignKey(x => x.SubscriberId).OnDelete(DeleteBehavior.Cascade);
+
+        var delivery = modelBuilder.Entity<AlertDelivery>();
+        delivery.ToTable("alert_deliveries");
+        delivery.HasIndex(x => new { x.SavedSearchId, x.WindowStart }).IsUnique();
+        delivery.HasOne<SavedSearch>().WithMany().HasForeignKey(x => x.SavedSearchId).OnDelete(DeleteBehavior.Cascade);
     }
 }
 

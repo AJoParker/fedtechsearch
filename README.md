@@ -101,6 +101,35 @@ UI on http://localhost:8080, API on http://localhost:5080.
 | `POST /api/jobs/{id}/feedback` | "Wrong tag?" report: `{ field, currentValue?, suggestedValue?, note? }`. 204, 400 `{ error }`, 404, or 429 (20 per hour per client) |
 | `GET /api/admin/feedback/summary?days=90` | Reports grouped by field, wrong value and suggestion, with examples. Needs the `X-Admin-Key` header; 404 when no key is set |
 
+### Email alerts
+
+Visitors save a search with **Email me new matches**, confirm by email (nothing is sent before
+that), and get a digest of new matching jobs daily at 7:00 AM Eastern or weekly on Monday at
+7:00 AM. They manage alerts at `/alerts` through emailed sign-in links (no passwords), and every
+digest has one-click unsubscribe (`List-Unsubscribe` / `List-Unsubscribe-Post`, RFC 8058).
+
+| Endpoint | What it does |
+|---|---|
+| `POST /api/alerts` | `{ email, queryString, name, frequency }`: saves an unconfirmed alert and emails a confirm link. Always `202`, known address or not; 5 per hour per client, 3 emails per address per day |
+| `POST /api/alerts/confirm`, `POST /api/alerts/session` | Trade a confirm or sign-in link's token for a 12-hour session |
+| `POST /api/alerts/manage-link` | `{ email }`: emails a sign-in link if the address has confirmed alerts. Always `202` |
+| `GET /api/alerts`, `PATCH`/`DELETE /api/alerts/searches/{id}`, `DELETE /api/alerts/me` | Manage alerts with `Authorization: Bearer <session>`; `/me` deletes the address and everything tied to it |
+| `POST /api/alerts/unsubscribe?token=` | One-click unsubscribe from all alerts |
+
+Locally, emails go to **MailPit**, a test inbox at http://localhost:8025 (started by
+`docker compose up`). Digests are sent by the ingest worker every 15 minutes when due; to send
+due digests right away:
+
+```bash
+dotnet run --project src/FedTechSearch.Ingest -- --send-alerts
+docker compose run --rm ingest --send-alerts
+```
+
+Set `PUBLIC_BASE_URL` in `.env` to the web UI's address so links in emails work. For production,
+set `EMAIL_PROVIDER=Ses`, `EMAIL_FROM` to an address on a domain verified in Amazon SES (with SPF,
+DKIM and DMARC records), request SES production access (new accounts can only email verified
+addresses), and give the containers AWS credentials (environment or task role).
+
 ### Tag reports
 
 Visitors can flag a wrong tag ("Wrong tag?" under a job's details). `field` is one of `roleFamily`,

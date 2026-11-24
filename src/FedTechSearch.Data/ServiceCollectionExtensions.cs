@@ -1,5 +1,7 @@
 using FedTechSearch.Core.Enrichment;
 using FedTechSearch.Core.Taxonomy;
+using FedTechSearch.Data.Alerts;
+using FedTechSearch.Data.Email;
 using FedTechSearch.Data.Feedback;
 using FedTechSearch.Data.Ingest;
 using FedTechSearch.Data.Llm;
@@ -29,6 +31,17 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<JobSearch>();
+
+        // Email alerts: the API handles sign-up and management; the ingest worker sends digests.
+        services.Configure<AlertOptions>(config.GetSection(AlertOptions.Section));
+        services.Configure<AppOptions>(config.GetSection(AppOptions.Section));
+        services.Configure<EmailOptions>(config.GetSection(EmailOptions.Section));
+        if (string.Equals(config[$"{EmailOptions.Section}:Provider"], "Ses", StringComparison.OrdinalIgnoreCase))
+            services.AddSingleton<IEmailSender, SesEmailSender>();
+        else
+            services.AddSingleton<IEmailSender, SmtpEmailSender>();
+        services.AddScoped<AlertTokens>();
+        services.AddScoped<AlertService>();
 
         services.Configure<FeedbackOptions>(config.GetSection(FeedbackOptions.Section));
         services.AddSingleton<FeedbackKey>();
@@ -64,6 +77,7 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<IOptions<LlmOptions>>().Value.Mode));
 
         services.AddScoped<IngestService>();
+        services.AddScoped<AlertDigestService>();
         return services;
     }
 }

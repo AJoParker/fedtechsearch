@@ -1,4 +1,5 @@
 using FedTechSearch.Data;
+using FedTechSearch.Data.Alerts;
 using FedTechSearch.Data.Ingest;
 using FedTechSearch.Ingest;
 
@@ -6,7 +7,9 @@ using FedTechSearch.Ingest;
 //   dotnet run                       run on a schedule (Ingest:IntervalHours)
 //   dotnet run -- --once             one pull from the USAJOBS API, then exit
 //   dotnet run -- --fixture <file>   load a saved USAJOBS response (no API key needed), then exit
+//   dotnet run -- --send-alerts      send every alert digest that is due right now, then exit
 var once = args.Contains("--once");
+var sendAlerts = args.Contains("--send-alerts");
 var fixtureIndex = Array.IndexOf(args, "--fixture");
 var fixturePath = fixtureIndex >= 0 && fixtureIndex + 1 < args.Length ? args[fixtureIndex + 1] : null;
 
@@ -18,6 +21,16 @@ var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
 });
 builder.Services.AddFedTechIngest(builder.Configuration);
 builder.Services.Configure<IngestWorkerOptions>(builder.Configuration.GetSection(IngestWorkerOptions.Section));
+
+if (sendAlerts)
+{
+    using var host = builder.Build();
+    using var scope = host.Services.CreateScope();
+    await DbInitializer.MigrateAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(), scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
+    var digests = await scope.ServiceProvider.GetRequiredService<AlertDigestService>().RunAsync(CancellationToken.None);
+    Console.WriteLine($"Alerts: {digests.Due} due, {digests.Sent} sent, {digests.Empty} with no new jobs, {digests.Failed} failed.");
+    return;
+}
 
 if (once || fixturePath is not null)
 {
@@ -36,4 +49,5 @@ if (once || fixturePath is not null)
 }
 
 builder.Services.AddHostedService<IngestWorker>();
+builder.Services.AddHostedService<AlertWorker>();
 await builder.Build().RunAsync();

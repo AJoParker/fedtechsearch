@@ -68,6 +68,12 @@ public sealed class JobSearchRequest
     /// <summary>Job IDs to leave out: posts the visitor hid in their browser. Up to 500 are used.</summary>
     public string[]? Hide { get; set; }
 
+    /// <summary>
+    /// Only jobs first seen after this time (alert digests). The setter is internal so it can't be
+    /// set from a query string.
+    /// </summary>
+    public DateTime? NewSince { get; internal set; }
+
     /// <summary>relevance (default with q), newest (default without q), closing, salary, nearest (radius searches)</summary>
     public string? Sort { get; set; }
 
@@ -241,6 +247,7 @@ public sealed class JobSearch(AppDbContext db, TimeProvider time)
         if (r.OpenToPublic is { } pub) q = q.Where(j => j.OpenToPublic == pub);
         if (r.Supervisory is { } sup) q = q.Where(j => j.Supervisory == sup);
         if (r.MayCloseEarly is { } early) q = q.Where(j => j.MayCloseEarly == early);
+        if (r.NewSince is { } newSince) q = q.Where(j => j.FirstSeen > newSince);
 
         var now = time.GetUtcNow().UtcDateTime;
         if (r.PostedWithinDays is 1 or 3 or 7 or 14)

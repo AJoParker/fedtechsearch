@@ -23,6 +23,80 @@ namespace FedTechSearch.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FedTechSearch.Core.Model.AlertDelivery", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("JobCount")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SavedSearchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("WindowEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("WindowStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SavedSearchId", "WindowStart")
+                        .IsUnique();
+
+                    b.ToTable("alert_deliveries", (string)null);
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.AuthToken", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<Guid?>("SavedSearchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SubscriberId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("SubscriberId", "Purpose", "CreatedAt");
+
+                    b.ToTable("auth_tokens", (string)null);
+                });
+
             modelBuilder.Entity("FedTechSearch.Core.Model.Job", b =>
                 {
                     b.Property<string>("Id")
@@ -292,6 +366,77 @@ namespace FedTechSearch.Data.Migrations
                     b.ToTable("job_locations", (string)null);
                 });
 
+            modelBuilder.Entity("FedTechSearch.Core.Model.SavedSearch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTime?>("LastNotifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<DateTime?>("PausedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("QueryString")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid>("SubscriberId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubscriberId");
+
+                    b.ToTable("saved_searches", (string)null);
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.Subscriber", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<DateTime?>("UnsubscribedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("subscribers", (string)null);
+                });
+
             modelBuilder.Entity("FedTechSearch.Core.Model.TagFeedback", b =>
                 {
                     b.Property<long>("Id")
@@ -344,11 +489,38 @@ namespace FedTechSearch.Data.Migrations
                     b.ToTable("tag_feedback", (string)null);
                 });
 
+            modelBuilder.Entity("FedTechSearch.Core.Model.AlertDelivery", b =>
+                {
+                    b.HasOne("FedTechSearch.Core.Model.SavedSearch", null)
+                        .WithMany()
+                        .HasForeignKey("SavedSearchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.AuthToken", b =>
+                {
+                    b.HasOne("FedTechSearch.Core.Model.Subscriber", null)
+                        .WithMany()
+                        .HasForeignKey("SubscriberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FedTechSearch.Core.Model.JobLocation", b =>
                 {
                     b.HasOne("FedTechSearch.Core.Model.Job", null)
                         .WithMany("GeoLocations")
                         .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.SavedSearch", b =>
+                {
+                    b.HasOne("FedTechSearch.Core.Model.Subscriber", null)
+                        .WithMany("Searches")
+                        .HasForeignKey("SubscriberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -365,6 +537,11 @@ namespace FedTechSearch.Data.Migrations
             modelBuilder.Entity("FedTechSearch.Core.Model.Job", b =>
                 {
                     b.Navigation("GeoLocations");
+                });
+
+            modelBuilder.Entity("FedTechSearch.Core.Model.Subscriber", b =>
+                {
+                    b.Navigation("Searches");
                 });
 #pragma warning restore 612, 618
         }

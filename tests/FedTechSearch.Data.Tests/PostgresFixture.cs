@@ -1,9 +1,9 @@
+using FedTechSearch.Data.Email;
 using FedTechSearch.Data.Ingest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Time.Testing;
 using Testcontainers.PostgreSql;
 
 namespace FedTechSearch.Data.Tests;
@@ -20,8 +20,11 @@ public sealed class PostgresFixture : IAsyncLifetime
 
     public string ConnectionString => _postgres.GetConnectionString();
 
+    /// <summary>Every email the app tried to send, instead of sending it.</summary>
+    public CapturingEmailSender Emails { get; } = new();
+
     /// <summary>"Now" for date filters. Fixture jobs open 2026-11-10 and close 2026-11-24.</summary>
-    public FakeTimeProvider Clock { get; } = new(new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
+    public TestClock Clock { get; } = new(new DateTimeOffset(2026, 11, 12, 12, 0, 0, TimeSpan.Zero));
 
     public async Task InitializeAsync()
     {
@@ -37,6 +40,7 @@ public sealed class PostgresFixture : IAsyncLifetime
         var services = new ServiceCollection().AddLogging();
         services.AddSingleton<TimeProvider>(Clock);
         services.AddFedTechIngest(config);
+        services.AddSingleton<IEmailSender>(Emails);
         Services = services.BuildServiceProvider();
 
         using var scope = Services.CreateScope();
@@ -56,4 +60,38 @@ public sealed class PostgresFixture : IAsyncLifetime
 public sealed class PostgresCollection : ICollectionFixture<PostgresFixture>
 {
     public const string Name = "postgres";
+}
+
+public sealed class CapturingEmailSender : IEmailSender
+{
+    private readonly List<EmailMessage> _sent = [];
+
+    /// <summary>Set to make the next send throw (simulates a mail outage).</summary>
+    public bool FailNext { get; set; }
+
+    public IReadOnlyList<EmailMessage> Sent { get { lock (_sent) return _sent.ToList(); } }
+
+    public void Clear() { lock (_sent) _sent.Clear(); }
+
+    public Task SendAsync(EmailMessage message, CancellationToken cancellationToken)
+    {
+        if (FailNext) { FailNext = false; throw new InvalidOperationException("mail server down"); }
+        lock (_sent) _sent.Add(message);
+        return Task.CompletedTask;
+    }
+}
+
+/// <summary>
+/// A clock tests can set to any time, backwards included (FakeTimeProvider only moves forward,
+/// which breaks when test classes sharing the fixture pick their own dates).
+/// </summary>
+public sealed class TestClock(DateTimeOffset start) : TimeProvider
+{
+    private DateTimeOffset _now = start;
+
+    public override DateTimeOffset GetUtcNow() => _now;
+
+    public void SetUtcNow(DateTimeOffset value) => _now = value;
+
+    public void Advance(TimeSpan by) => _now += by;
 }
