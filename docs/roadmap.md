@@ -231,6 +231,15 @@ produces exactly one digest and a second run produces none.
 
 ## Phase 5: Public stats page
 
+> **Done** (2026-11-26). `daily_stats` also has `RemoteCount` and `TeleworkCount`, so any dimension
+> can show its remote/telework share; a `total` dimension (value `all`) holds site-wide numbers.
+> `NewCount` counts active postings whose `OpenDate` falls in the 7 days ending on that date (the
+> first ingest stamps every job's `FirstSeen`, so that field can't mean "new"). Fully remote federal
+> postings are rare (about 1 in 450), so the chart became "Remote and telework by role", stacked.
+> The agencies chart counts all tech postings. Snapshots use the Eastern date and replace that
+> day's rows on every ingest. Trend lines and week-over-week changes appear once a week of
+> snapshots exists.
+
 Useful for job hunters, and shareable content for launch posts.
 
 - Table `daily_stats`: `Date`, `Dimension` (`tech`, `roleFamily`, `agency`, `state`,

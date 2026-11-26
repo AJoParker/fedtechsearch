@@ -27,6 +27,7 @@
   --field-bg: #ffffff;
   --backdrop: rgb(10 22 45 / .55);
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2314213d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --bar: #1d4f91;             /* chart bars and trend lines (validated vs --panel) */
   --radius: 10px;
   font-family: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color: var(--ink);
@@ -38,6 +39,7 @@
   color-scheme: dark;
   --bg: #0b1a30;
   --panel: #11243f;
+  --bar: #5b8fe0;
   --ink: #f5f5f5;
   --muted: #aeb9cb;
   --line: #243b5e;
@@ -358,3 +360,47 @@ dialog.hidden-posts .dialog-head h2 { font-size: 18px; }
 .alert-row select { width: auto; }
 .link.danger { color: var(--danger); }
 .danger-zone { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+/* Stats page: ranked bars with visible numbers; each row links to a filtered search */
+.stats-page { max-width: 1100px; display: flex; flex-direction: column; gap: 14px; }
+.stat-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.stat-tile { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--ink); text-decoration: none; }
+.stat-tile:hover { background: var(--hover); }
+.stat-number { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+.stat-label { font-size: 13px; color: var(--muted); }
+.stat-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 14px; align-items: start; }
+.stat-section { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.stat-section h3 { font-size: 16px; }
+.bars { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.bars { --value-col: 3.5rem; --trend-cols: ; }
+.bars.with-detail { --value-col: 7.5rem; }
+.bars.trends { --trend-cols: 60px 2.5rem; }
+.bar-row {
+  display: grid; grid-template-columns: minmax(0, 11rem) minmax(40px, 1fr) var(--value-col) var(--trend-cols); align-items: center; gap: 4px 10px;
+  padding: 5px 6px; margin: 0 -6px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px;
+}
+.bar-row:hover { background: var(--hover); }
+.bar-row:hover .bar-label { text-decoration: underline; }
+.bar-row:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 1px; }
+.bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { display: flex; height: 10px; border-radius: 0 4px 4px 0; background: var(--chip-bg); overflow: hidden; }
+.bar-fill { display: block; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--bar); }
+.bar-fill.remote { background: var(--red); border-radius: 0; min-width: 0; }
+.bar-fill.telework { min-width: 0; }
+.bar-fill.remote:not([style*="width: 0%"]) + .bar-fill.telework { border-left: 2px solid var(--panel); } /* surface gap between segments */
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; font-size: 12px; color: var(--muted); }
+.legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 10px; height: 10px; border-radius: 2px; background: var(--bar); }
+.swatch.remote { background: var(--red); }
+.bar-value { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; white-space: nowrap; }
+.bar-detail { margin-left: 6px; font-weight: 400; font-size: 12px; color: var(--muted); }
+.spark-cell, .spark { display: block; }
+.spark polyline { fill: none; stroke: var(--bar); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.bar-change { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted); min-width: 2.5em; text-align: right; }
+.bar-change.up { color: var(--good); }
+.bar-change.down { color: var(--danger); }
+@media (max-width: 560px) {
+  /* Label on its own line, bar and numbers below */
+  .bar-row { grid-template-columns: minmax(40px, 1fr) var(--value-col) var(--trend-cols); }
+  .bar-label { grid-column: 1 / -1; }
+}

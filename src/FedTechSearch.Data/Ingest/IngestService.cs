@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using FedTechSearch.Core.Enrichment;
 using FedTechSearch.Core.Model;
+using FedTechSearch.Data.Stats;
 using FedTechSearch.Data.UsaJobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,13 +22,15 @@ public sealed class IngestService
     private readonly AppDbContext _db;
     private readonly UsaJobsClient _client;
     private readonly JobEnricher _enricher;
+    private readonly StatsSnapshotService _stats;
     private readonly ILogger<IngestService> _logger;
 
-    public IngestService(AppDbContext db, UsaJobsClient client, JobEnricher enricher, ILogger<IngestService> logger)
+    public IngestService(AppDbContext db, UsaJobsClient client, JobEnricher enricher, StatsSnapshotService stats, ILogger<IngestService> logger)
     {
         _db = db;
         _client = client;
         _enricher = enricher;
+        _stats = stats;
         _logger = logger;
     }
 
@@ -56,6 +59,7 @@ public sealed class IngestService
 
         var result = new IngestResult(total.Seen, total.Enriched, total.Unchanged, deactivated);
         _logger.LogInformation("Ingest finished: {Result}", result);
+        await TakeStatsSnapshotAsync(cancellationToken);
         return result;
     }
 
@@ -69,7 +73,21 @@ public sealed class IngestService
         await ProcessPageAsync(doc.RootElement, DateTime.UtcNow, total, cancellationToken, forceActive: true);
         var result = new IngestResult(total.Seen, total.Enriched, total.Unchanged, 0);
         _logger.LogInformation("Fixture ingest finished: {Result}", result);
+        await TakeStatsSnapshotAsync(cancellationToken);
         return result;
+    }
+
+    /// <summary>Records today's stats. A failure here is logged and never fails the ingest itself.</summary>
+    private async Task TakeStatsSnapshotAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _stats.TakeAsync(cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            _logger.LogError(ex, "Stats snapshot failed");
+        }
     }
 
     private async Task ProcessPageAsync(JsonElement root, DateTime now, Counter total, CancellationToken cancellationToken, bool forceActive = false)

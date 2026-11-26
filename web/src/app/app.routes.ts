@@ -6,11 +6,12 @@ import { AlertsPage } from './pages/alerts/alerts.page';
 import { JobPage } from './pages/job/job.page';
 import { PrivacyPage } from './pages/privacy/privacy.page';
 import { SearchPage } from './pages/search/search.page';
+import { StatsPage } from './pages/stats/stats.page';
 
-// /stats arrives with roadmap phase 5.
 export const routes: Routes = [
   { path: '', component: SearchPage, title: 'FedTech Search' },
   { path: 'jobs/:id', component: JobPage, title: 'Job · FedTech Search' },
+  { path: 'stats', component: StatsPage, title: 'Stats · FedTech Search' },
   { path: 'privacy', component: PrivacyPage, title: 'Privacy · FedTech Search' },
   { path: 'alerts', component: AlertsPage, title: 'Job alerts · FedTech Search' },
   { path: 'alerts/confirm', component: AlertConfirmPage, title: 'Confirm alert · FedTech Search' },

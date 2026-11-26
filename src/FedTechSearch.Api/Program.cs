@@ -10,6 +10,7 @@ using FedTechSearch.Data;
 using FedTechSearch.Data.Alerts;
 using FedTechSearch.Data.Feedback;
 using FedTechSearch.Data.Search;
+using FedTechSearch.Data.Stats;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 
@@ -60,6 +61,9 @@ builder.Services.AddRateLimiter(o =>
         }));
 });
 
+// /api/stats changes only when the ingest worker takes a snapshot (every few hours).
+builder.Services.AddOutputCache();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -71,6 +75,7 @@ using (var scope = app.Services.CreateScope())
 app.UseForwardedHeaders();
 app.UseCors();
 app.UseRateLimiter();
+app.UseOutputCache();
 
 var api = app.MapGroup("/api");
 
@@ -79,6 +84,13 @@ api.MapGet("/jobs", async ([AsParameters] JobSearchRequest request, JobSearch se
 
 api.MapGet("/jobs/{id}", async (string id, JobSearch search, CancellationToken ct) =>
     await search.GetAsync(id, ct) is { } job ? Results.Ok(job) : Results.NotFound());
+
+// Stats page: today's top values for one dimension plus their daily history.
+api.MapGet("/stats", async (string? dimension, int? days, int? top, StatsQuery stats, CancellationToken ct) =>
+        StatsQuery.IsDimension(dimension)
+            ? Results.Ok(await stats.GetAsync(dimension!, days, top, ct))
+            : Results.BadRequest(new { error = $"dimension must be one of: {string.Join(", ", StatsDimensions.All)}" }))
+    .CacheOutput(p => p.Expire(TimeSpan.FromHours(1)).SetVaryByQuery("dimension", "days", "top"));
 
 // "Wrong tag?" reports. 204 also covers same-day repeats, so a client can't tell they were deduplicated.
 api.MapPost("/jobs/{id}/feedback", async (string id, FeedbackInput input, HttpContext http, FeedbackService feedback, CancellationToken ct) =>

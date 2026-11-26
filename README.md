@@ -98,8 +98,17 @@ UI on http://localhost:8080, API on http://localhost:5080.
 | `GET /api/jobs` | Search with filters; returns results plus facet counts |
 | `GET /api/jobs/{id}` | Full job, including duties |
 | `GET /api/meta` | Taxonomy lists for building filter UIs |
+| `GET /api/stats?dimension=tech&days=90&top=10` | Latest daily snapshot for one dimension (`tech`, `roleFamily`, `agency`, `state`, `seniority`, `clearance`, `work`, `total`): site-wide totals, the top values with active/new/remote/telework counts and week-over-week change, and each value's daily series. Cached for an hour |
 | `POST /api/jobs/{id}/feedback` | "Wrong tag?" report: `{ field, currentValue?, suggestedValue?, note? }`. 204, 400 `{ error }`, 404, or 429 (20 per hour per client) |
 | `GET /api/admin/feedback/summary?days=90` | Reports grouped by field, wrong value and suggestion, with examples. Needs the `X-Admin-Key` header; 404 when no key is set |
+
+### Stats
+
+`/stats` shows top tech, the agencies hiring the most, the remote and telework share by role, and
+new postings this week. Every row links to the matching search. The ingest worker records a
+snapshot in `daily_stats` after each run (today's rows are replaced, keyed by the Eastern date),
+so history starts with your first ingest; trend lines and "vs last week" changes appear after
+seven days of snapshots.
 
 ### Email alerts
 

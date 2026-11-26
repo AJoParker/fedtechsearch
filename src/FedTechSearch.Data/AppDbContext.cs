@@ -21,6 +21,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<SavedSearch> SavedSearches => Set<SavedSearch>();
     public DbSet<AuthToken> AuthTokens => Set<AuthToken>();
     public DbSet<AlertDelivery> AlertDeliveries => Set<AlertDelivery>();
+    public DbSet<DailyStat> DailyStats => Set<DailyStat>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -99,6 +100,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         delivery.ToTable("alert_deliveries");
         delivery.HasIndex(x => new { x.SavedSearchId, x.WindowStart }).IsUnique();
         delivery.HasOne<SavedSearch>().WithMany().HasForeignKey(x => x.SavedSearchId).OnDelete(DeleteBehavior.Cascade);
+
+        var stat = modelBuilder.Entity<DailyStat>();
+        stat.ToTable("daily_stats");
+        stat.HasKey(x => new { x.Date, x.Dimension, x.Value });
+        stat.Property(x => x.Dimension).HasMaxLength(32);
+        stat.Property(x => x.Value).HasMaxLength(200);
+        stat.HasIndex(x => new { x.Dimension, x.Date });
     }
 }
 

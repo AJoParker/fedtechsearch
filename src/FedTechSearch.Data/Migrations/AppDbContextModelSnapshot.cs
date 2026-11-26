@@ -97,6 +97,38 @@ namespace FedTechSearch.Data.Migrations
                     b.ToTable("auth_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("FedTechSearch.Core.Model.DailyStat", b =>
+                {
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Dimension")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("ActiveCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NewCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RemoteCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeleworkCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Date", "Dimension", "Value");
+
+                    b.HasIndex("Dimension", "Date");
+
+                    b.ToTable("daily_stats", (string)null);
+                });
+
             modelBuilder.Entity("FedTechSearch.Core.Model.Job", b =>
                 {
                     b.Property<string>("Id")
@@ -369,7 +401,6 @@ namespace FedTechSearch.Data.Migrations
             modelBuilder.Entity("FedTechSearch.Core.Model.SavedSearch", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ConfirmedAt")
@@ -412,7 +443,6 @@ namespace FedTechSearch.Data.Migrations
             modelBuilder.Entity("FedTechSearch.Core.Model.Subscriber", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("ConfirmedAt")

@@ -6,6 +6,7 @@ using FedTechSearch.Data.Feedback;
 using FedTechSearch.Data.Ingest;
 using FedTechSearch.Data.Llm;
 using FedTechSearch.Data.Search;
+using FedTechSearch.Data.Stats;
 using FedTechSearch.Data.UsaJobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +32,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<JobSearch>();
+        services.AddScoped<StatsQuery>();
 
         // Email alerts: the API handles sign-up and management; the ingest worker sends digests.
         services.Configure<AlertOptions>(config.GetSection(AlertOptions.Section));
@@ -76,6 +78,7 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<ILlmClassifier>(),
             sp.GetRequiredService<IOptions<LlmOptions>>().Value.Mode));
 
+        services.AddScoped<StatsSnapshotService>();
         services.AddScoped<IngestService>();
         services.AddScoped<AlertDigestService>();
         return services;

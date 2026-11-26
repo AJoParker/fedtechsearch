@@ -22,6 +22,7 @@ import { ToastComponent } from './toast';
         <input #where class="where" type="search" [value]="query()['location'] ?? ''" placeholder="City, state (e.g. Houston, TX)" aria-label="Location" />
         <button type="submit">Search</button>
       </form>
+      <a class="header-link" routerLink="/stats">Stats</a>
       <a class="header-link" routerLink="/alerts">Alerts</a>
       <button type="button" class="theme-toggle" (click)="theme.toggle()"
               [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
